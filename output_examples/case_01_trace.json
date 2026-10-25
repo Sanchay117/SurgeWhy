@@ -1,0 +1,1066 @@
+{
+  "case_id": "CASE-01",
+  "claim_id": "CLM-9041",
+  "passenger_name": "Maya Patel",
+  "flight_number": "UA-418",
+  "carrier_name": "United Airlines",
+  "route": "SFO -> LHR",
+  "jurisdiction": "UK261",
+  "carrier_denial_notice": "CLAIM DENIED ($0 PAYOUT): Flight UA-418 arrived 4h 25m late due to Extraordinary Weather Conditions at Departure Hub (Code WX-88).",
+  "passenger_statement": "It was a crystal-clear evening in San Francisco and planes at the gates on both sides of us pushed back on time. We sat at Gate G94 for over four hours and I paid $240 out of pocket for food and airport lodging. Why was I denied?",
+  "verdict_code": "OVERTURNED_PAY_FULL",
+  "verdict_banner": "OVERTURNED: PAY $890 ($650 UK261 Statutory + $240 Care)",
+  "airline_initial_payout_usd": 0,
+  "statutory_cash_owed_usd": 650,
+  "care_or_fee_recovery_usd": 240,
+  "total_owed_usd": 890,
+  "confidence_score": 0.97,
+  "abstention_triggered": false,
+  "missing_evidence_request": "",
+  "plain_english_why": "United's 'Extraordinary Hub Weather' denial (Code WX-88) is disproved by three independent records: NOAA METAR shows 10-mile clear skies at SFO with 14 of 14 neighboring flights departing on time, inbound aircraft N784UA landed 3 minutes early from Denver, and maintenance log MNT-4410 proves the 265-minute delay was caused by a 148-minute brake temperature sensor replacement (MEL-32-41) that triggered a 117-minute FAA Part 117 pilot duty-limit timeout.",
+  "causal_chain": [
+    {
+      "node": "1. Airline Claim",
+      "fact": "Carrier denied claim citing WX-88 hub weather ($0 paid)",
+      "citation": "zetaris_ops.flight_disruptions#CLM-9041"
+    },
+    {
+      "node": "2. Weather Falsified",
+      "fact": "KSFO had 10.0 SM clear skies, 8kt wind, 0 ground stops, 14/14 peer departures on time",
+      "citation": "zetaris_rest.faa_metar_atc#METAR-KSFO-1018"
+    },
+    {
+      "node": "3. True Root Cause",
+      "fact": "Tail N784UA had 148m brake sensor fault (MEL-32-41) -> 117m pilot Part 117 timeout",
+      "citation": "zetaris_maint.aircraft_crew_logs#MNT-4410"
+    },
+    {
+      "node": "4. Statutory Entitlement",
+      "fact": "265m >= 240m long-haul threshold under UK261 Art. 7 & Art. 9 = $650 + $240 = $890",
+      "citation": "zetaris_policy.passenger_rights_rules#UK261-ART7-LH"
+    }
+  ],
+  "ruled_out_hypotheses": [
+    {
+      "hypothesis_id": "HYP-AIRLINE-DEFENSE",
+      "title": "H1: Extraordinary Hub Weather at SFO (Code WX-88)",
+      "status": "FALSIFIED",
+      "supporting_citations": [
+        "zetaris_ops.flight_disruptions#CLM-9041"
+      ],
+      "refuting_citations": [
+        "zetaris_rest.faa_metar_atc#METAR-KSFO-1018"
+      ],
+      "explanation": "KSFO recorded 10.0 SM clear visibility, 8kt winds, zero FAA ground stops, and 14/14 Concourse G peer flights departed on schedule."
+    },
+    {
+      "hypothesis_id": "HYP-KNOCK-ON-INBOUND",
+      "title": "H2: Inbound Aircraft Weather or Bird Strike on Prior Leg",
+      "status": "FALSIFIED",
+      "supporting_citations": [],
+      "refuting_citations": [
+        "zetaris_maint.aircraft_crew_logs#MNT-4410"
+      ],
+      "explanation": "Tail N784UA landed 3 minutes early from Denver with zero weather holds or bird-strike inspections."
+    },
+    {
+      "hypothesis_id": "HYP-ROOT-MECHANICAL-CREW",
+      "title": "H3: Routine Brake Sensor MEL-32-41 + Knock-On Crew Duty Timeout",
+      "status": "VERIFIED_ROOT_CAUSE",
+      "supporting_citations": [
+        "zetaris_maint.aircraft_crew_logs#MNT-4410",
+        "zetaris_policy.passenger_rights_rules#UK261-ART7-LH"
+      ],
+      "refuting_citations": [],
+      "explanation": "148m hydraulic sensor repair + 117m reserve pilot wait = 265m controllable carrier delay under Wallentin-Hermann."
+    }
+  ],
+  "counterfactuals": [
+    {
+      "id": "CF-01",
+      "parameter": "Final Arrival Delay",
+      "actual_value": "265 min",
+      "flip_threshold": "<= 239 min (-26 min faster)",
+      "flipped_outcome": "Payout drops from $890 to $565 ($325 50%-tier UK261 cash + $240 care); at <= 179 min cash drops to $0."
+    },
+    {
+      "id": "CF-02",
+      "parameter": "FAA Ground Stop / Crosswind",
+      "actual_value": "0 Ground Stops, 8 kt wind",
+      "flip_threshold": "Active FAA Ground Stop = 1 (or wind > 35 kt)",
+      "flipped_outcome": "Statutory cash flips from $650 to $0, BUT $240 Art. 9 hotel/meal duty-of-care STILL remains legally owed."
+    },
+    {
+      "id": "CF-03",
+      "parameter": "Defect Type on N784UA",
+      "actual_value": "MEL-32-41 routine brake sensor wear",
+      "flip_threshold": "Fleet-wide FAA Airworthiness Directive or Foreign Object Runway Debris",
+      "flipped_outcome": "Root cause reclassifies to Extraordinary Circumstance ($650 cash -> $0)."
+    }
+  ],
+  "simulator_defaults": {
+    "arrival_delay_min": 265,
+    "faa_ground_stop_active": 0,
+    "controllable_maint_min": 265,
+    "door_uncertainty_min": 0
+  },
+  "demand_letter": "DEMAND FOR UK261 COMPENSATION ($890.00) - CLAIM CLM-9041 / FLIGHT UA-418 (SFO->LHR)\n1. Carrier's WX-88 weather denial is contradicted by NOAA METAR-KSFO-1018 (10.0 SM visibility, 8kt wind, 14/14 peer departures on time).\n2. Maintenance record MNT-4410 on tail N784UA confirms 148m MEL-32-41 brake sensor repair + 117m Part 117 crew timeout (265m controllable).\n3. Under UK261 Art. 7(1)(c) (Wallentin-Hermann) and Art. 9, remit $650 (\u00a3520) statutory compensation + $240 verified care receipts = $890.00.",
+  "engines_telemetry": {
+    "scout_intent": {
+      "intent_type": "WEATHER_PRETEXT_AUDIT",
+      "dispute_severity": "CRITICAL",
+      "ambiguity_risk_score": 20,
+      "abstention_watch": false,
+      "required_zetaris_tables": [
+        "zetaris_ops.flight_disruptions",
+        "zetaris_rest.faa_metar_atc",
+        "zetaris_policy.passenger_rights_rules",
+        "zetaris_maint.aircraft_crew_logs"
+      ],
+      "lane_plan": {
+        "step_1_intake": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "step_2_forensics_r1": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "step_3_counsel_critic": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "step_4_forensics_r2": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "step_5_counterfactual_engine": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "step_6_legal_brief": "nvidia/nemotron-3.5-super-vl-120b-a12b"
+      },
+      "rationale": "Audits hub weather denial code against NOAA METAR peer departures and aircraft MEL / Part 117 crew logs."
+    },
+    "world_model": {
+      "claim_id": "CLM-9041",
+      "version": 12,
+      "evidence_nodes": {
+        "EV-OPS-01": {
+          "node_id": "EV-OPS-01",
+          "source_table": "zetaris_ops.flight_disruptions",
+          "primary_key": "CLM-9041",
+          "field_summary": "UA-418 (SFO -> LHR) delayed 265m (door uncertainty +/-0m); airline cited WX-88 (Extraordinary Weather Conditions at Departure Hub) and paid $0.",
+          "supports_side": "AIRLINE_CLAIM_BASELINE",
+          "recorded_by": "Telemetry Forensics R1",
+          "world_version": 2
+        },
+        "EV-METAR-02": {
+          "node_id": "EV-METAR-02",
+          "source_table": "zetaris_rest.faa_metar_atc",
+          "primary_key": "METAR-KSFO-1018",
+          "field_summary": "KSFO visibility 10.0 SM, wind 8kt, ground_stop=0, ATC hold=0m, peer on-time=14/14.",
+          "supports_side": "PASSENGER",
+          "recorded_by": "Telemetry Forensics R1",
+          "world_version": 3
+        },
+        "EV-POL-03": {
+          "node_id": "EV-POL-03",
+          "source_table": "zetaris_policy.passenger_rights_rules",
+          "primary_key": "UK261-ART7-LH",
+          "field_summary": "UK261 Art. 7(1)(c) & Wallentin-Hermann: \u00a3520 ($650) for >=240m delay (50% = $325 for 180-239m) when root cause is routine technical fault or crew timeout; Art. 9 hotel/meals always owed.",
+          "supports_side": "STATUTORY_RULE",
+          "recorded_by": "Telemetry Forensics R1",
+          "world_version": 4
+        },
+        "EV-MAINT-04": {
+          "node_id": "EV-MAINT-04",
+          "source_table": "zetaris_maint.aircraft_crew_logs",
+          "primary_key": "MNT-4410",
+          "field_summary": "Tail N784UA (Landed 3 min early from KDEN (Zero weather or bird strike)): MEL-32-41 [CONTROLLABLE_MECHANICAL] - Unscheduled hydraulic brake temperature sensor replacement (148m) pushed First Officer past FAA Part 117 duty limit (+117m reserve pilot wait).",
+          "supports_side": "PASSENGER",
+          "recorded_by": "Telemetry Forensics R2",
+          "world_version": 8
+        }
+      },
+      "hypotheses": {
+        "HYP-AIRLINE-DEFENSE": {
+          "hypothesis_id": "HYP-AIRLINE-DEFENSE",
+          "title": "H1: Extraordinary Hub Weather at SFO (Code WX-88)",
+          "proposed_by": "Telemetry Forensics R1",
+          "status": "FALSIFIED",
+          "supporting_citations": [
+            "zetaris_ops.flight_disruptions#CLM-9041"
+          ],
+          "refuting_citations": [
+            "zetaris_rest.faa_metar_atc#METAR-KSFO-1018"
+          ],
+          "explanation": "KSFO recorded 10.0 SM clear visibility, 8kt winds, zero FAA ground stops, and 14/14 Concourse G peer flights departed on schedule."
+        },
+        "HYP-KNOCK-ON-INBOUND": {
+          "hypothesis_id": "HYP-KNOCK-ON-INBOUND",
+          "title": "H2: Inbound Aircraft Weather or Bird Strike on Prior Leg",
+          "proposed_by": "Telemetry Forensics R2",
+          "status": "FALSIFIED",
+          "supporting_citations": [],
+          "refuting_citations": [
+            "zetaris_maint.aircraft_crew_logs#MNT-4410"
+          ],
+          "explanation": "Tail N784UA landed 3 minutes early from Denver with zero weather holds or bird-strike inspections."
+        },
+        "HYP-ROOT-MECHANICAL-CREW": {
+          "hypothesis_id": "HYP-ROOT-MECHANICAL-CREW",
+          "title": "H3: Routine Brake Sensor MEL-32-41 + Knock-On Crew Duty Timeout",
+          "proposed_by": "Telemetry Forensics R2",
+          "status": "VERIFIED_ROOT_CAUSE",
+          "supporting_citations": [
+            "zetaris_maint.aircraft_crew_logs#MNT-4410",
+            "zetaris_policy.passenger_rights_rules#UK261-ART7-LH"
+          ],
+          "refuting_citations": [],
+          "explanation": "148m hydraulic sensor repair + 117m reserve pilot wait = 265m controllable carrier delay under Wallentin-Hermann."
+        }
+      },
+      "critic_challenges": [
+        {
+          "challenge_id": "CRIT-CLM-9041",
+          "verdict": "REVISION_REQUIRED",
+          "objection": "PROOF_INSUFFICIENT_KNOCK_ON_DEFENSE: Clear skies at KSFO alone do not win under UK261 Art. 5(3)! Airline counsel will argue inbound tail N784UA suffered an extraordinary bird strike, lightning strike, or ATC restriction on its prior leg. Mandatory Round 2 SQL: query zetaris_maint.aircraft_crew_logs for N784UA.",
+          "required_sql_followup": "SELECT * FROM zetaris_maint.aircraft_crew_logs WHERE claim_id = 'CLM-9041' AND tail_number = 'N784UA'",
+          "world_version": 7
+        }
+      ],
+      "counterfactual_deltas": [
+        {
+          "id": "CF-01",
+          "parameter": "Final Arrival Delay",
+          "actual_value": "265 min",
+          "flip_threshold": "<= 239 min (-26 min faster)",
+          "flipped_outcome": "Payout drops from $890 to $565 ($325 50%-tier UK261 cash + $240 care); at <= 179 min cash drops to $0."
+        },
+        {
+          "id": "CF-02",
+          "parameter": "FAA Ground Stop / Crosswind",
+          "actual_value": "0 Ground Stops, 8 kt wind",
+          "flip_threshold": "Active FAA Ground Stop = 1 (or wind > 35 kt)",
+          "flipped_outcome": "Statutory cash flips from $650 to $0, BUT $240 Art. 9 hotel/meal duty-of-care STILL remains legally owed."
+        },
+        {
+          "id": "CF-03",
+          "parameter": "Defect Type on N784UA",
+          "actual_value": "MEL-32-41 routine brake sensor wear",
+          "flip_threshold": "Fleet-wide FAA Airworthiness Directive or Foreign Object Runway Debris",
+          "flipped_outcome": "Root cause reclassifies to Extraordinary Circumstance ($650 cash -> $0)."
+        }
+      ],
+      "history": [
+        {
+          "version": 1,
+          "agent": "system",
+          "event": "Initialized CausalWorldModel for CLM-9041"
+        },
+        {
+          "version": 2,
+          "agent": "Telemetry Forensics R1",
+          "event": "Added evidence EV-OPS-01 from zetaris_ops.flight_disruptions#CLM-9041"
+        },
+        {
+          "version": 3,
+          "agent": "Telemetry Forensics R1",
+          "event": "Added evidence EV-METAR-02 from zetaris_rest.faa_metar_atc#METAR-KSFO-1018"
+        },
+        {
+          "version": 4,
+          "agent": "Telemetry Forensics R1",
+          "event": "Added evidence EV-POL-03 from zetaris_policy.passenger_rights_rules#UK261-ART7-LH"
+        },
+        {
+          "version": 5,
+          "agent": "Telemetry Forensics R1",
+          "event": "Hypothesis HYP-AIRLINE-DEFENSE -> PROPOSED"
+        },
+        {
+          "version": 6,
+          "agent": "Airline Counsel Critic",
+          "event": "Hypothesis HYP-AIRLINE-DEFENSE -> CHALLENGED_BY_COUNSEL"
+        },
+        {
+          "version": 7,
+          "agent": "Airline Counsel Critic",
+          "event": "Critic challenge CRIT-CLM-9041: REVISION_REQUIRED"
+        },
+        {
+          "version": 8,
+          "agent": "Telemetry Forensics R2",
+          "event": "Added evidence EV-MAINT-04 from zetaris_maint.aircraft_crew_logs#MNT-4410"
+        },
+        {
+          "version": 9,
+          "agent": "Telemetry Forensics R2",
+          "event": "Hypothesis HYP-AIRLINE-DEFENSE -> FALSIFIED"
+        },
+        {
+          "version": 10,
+          "agent": "Telemetry Forensics R2",
+          "event": "Hypothesis HYP-KNOCK-ON-INBOUND -> FALSIFIED"
+        },
+        {
+          "version": 11,
+          "agent": "Telemetry Forensics R2",
+          "event": "Hypothesis HYP-ROOT-MECHANICAL-CREW -> VERIFIED_ROOT_CAUSE"
+        },
+        {
+          "version": 12,
+          "agent": "Counterfactual Engine",
+          "event": "Recorded 3 counterfactual flip rules"
+        }
+      ]
+    },
+    "markovian": {
+      "steps_compressed": 6,
+      "naive_cumulative_tokens": 8290,
+      "markovian_total_tokens": 723,
+      "token_reduction_pct": 91.3,
+      "max_capsule_budget": 380,
+      "capsules": [
+        {
+          "step_index": 1,
+          "step_name": "Intake & Statutory Scope Agent",
+          "world_version": 1,
+          "verified_citations": [
+            "HMEM-PREC-302",
+            "HMEM-EP-102",
+            "HMEM-EP-101"
+          ],
+          "open_questions": [
+            "Verify carrier claim code against live METAR and statutory payout rules"
+          ],
+          "active_verdict_draft": "Pending telemetry verification for WEATHER_PRETEXT_AUDIT",
+          "capsule_tokens": 100,
+          "raw_cumulative_tokens": 755
+        },
+        {
+          "step_index": 2,
+          "step_name": "Telemetry Forensics Agent (Round 1 SQL)",
+          "world_version": 5,
+          "verified_citations": [
+            "zetaris_ops.flight_disruptions#CLM-9041",
+            "zetaris_rest.faa_metar_atc#METAR-KSFO-1018",
+            "zetaris_policy.passenger_rights_rules#UK261-ART7-LH"
+          ],
+          "open_questions": [
+            "Unverified inbound aircraft tail history, MEL mechanical logs, and crew duty timers"
+          ],
+          "active_verdict_draft": "Preliminary weather check complete; tail-level causation still unproven",
+          "capsule_tokens": 133,
+          "raw_cumulative_tokens": 1958
+        },
+        {
+          "step_index": 3,
+          "step_name": "Devil's Advocate Airline Counsel Critic",
+          "world_version": 7,
+          "verified_citations": [
+            "zetaris_ops.flight_disruptions#CLM-9041",
+            "zetaris_rest.faa_metar_atc#METAR-KSFO-1018",
+            "zetaris_policy.passenger_rights_rules#UK261-ART7-LH"
+          ],
+          "open_questions": [
+            "Execute tail & crew log audit on N784UA"
+          ],
+          "active_verdict_draft": "BLOCKED BY CRITIC: Awaiting Round 2 aircraft_crew_logs proof",
+          "capsule_tokens": 119,
+          "raw_cumulative_tokens": 3242
+        },
+        {
+          "step_index": 4,
+          "step_name": "Telemetry Forensics Agent (Round 2 Tail & Crew SQL)",
+          "world_version": 11,
+          "verified_citations": [
+            "zetaris_ops.flight_disruptions#CLM-9041",
+            "zetaris_rest.faa_metar_atc#METAR-KSFO-1018",
+            "zetaris_policy.passenger_rights_rules#UK261-ART7-LH",
+            "zetaris_maint.aircraft_crew_logs#MNT-4410"
+          ],
+          "open_questions": [
+            "Compute exact counterfactual flip boundaries and confidence calibration"
+          ],
+          "active_verdict_draft": "OVERTURNED_PAY_FULL ($890)",
+          "capsule_tokens": 130,
+          "raw_cumulative_tokens": 4732
+        },
+        {
+          "step_index": 5,
+          "step_name": "Counterfactual & Threshold Boundary Engine",
+          "world_version": 12,
+          "verified_citations": [
+            "zetaris_ops.flight_disruptions#CLM-9041",
+            "zetaris_rest.faa_metar_atc#METAR-KSFO-1018",
+            "zetaris_policy.passenger_rights_rules#UK261-ART7-LH",
+            "zetaris_maint.aircraft_crew_logs#MNT-4410"
+          ],
+          "open_questions": [],
+          "active_verdict_draft": "OVERTURNED: PAY $890 ($650 UK261 Statutory + $240 Care)",
+          "capsule_tokens": 118,
+          "raw_cumulative_tokens": 6445
+        },
+        {
+          "step_index": 6,
+          "step_name": "Explainable Legal Brief & Claim Packet Agent",
+          "world_version": 12,
+          "verified_citations": [
+            "zetaris_ops.flight_disruptions#CLM-9041",
+            "zetaris_rest.faa_metar_atc#METAR-KSFO-1018",
+            "zetaris_policy.passenger_rights_rules#UK261-ART7-LH",
+            "zetaris_maint.aircraft_crew_logs#MNT-4410",
+            "HMEM-PREC-304"
+          ],
+          "open_questions": [],
+          "active_verdict_draft": "OVERTURNED: PAY $890 ($650 UK261 Statutory + $240 Care)",
+          "capsule_tokens": 123,
+          "raw_cumulative_tokens": 8290
+        }
+      ]
+    },
+    "h_mem": {
+      "recalled_before_step_1": [
+        {
+          "memory_id": "HMEM-PREC-302",
+          "case_ref": "CLM-9041",
+          "carrier": "United Airlines",
+          "verdict": "OVERTURNED_PAY_FULL",
+          "rule_applied": "UK261-ART7-LH",
+          "summary": "United's 'Extraordinary Hub Weather' denial (Code WX-88) is disproved by three independent records: NOAA METAR shows 10-mile clear skies at SFO with 14 of 14 neighboring flights departing on time, inbound aircraft N784UA landed 3 minutes early from Denver, and maintenance log MNT-4410 proves the 265-minute delay was caused by a 148-minute brake temperature sensor replacement (MEL-32-41) that triggered a 117-minute FAA Part 117 pilot duty-limit timeout.",
+          "tags": [
+            "UA",
+            "WX-88",
+            "UK261",
+            "MEL-32-41"
+          ],
+          "tier": "PRECEDENT",
+          "relevance_score": 18
+        },
+        {
+          "memory_id": "HMEM-EP-102",
+          "carrier": "British Airways",
+          "code": "ATC-14",
+          "summary": "Transatlantic missed-connection denials citing ATC-14 frequently bundle minor 10-15m ocean-track spacing with 35-50m controllable gate catering or baggage holds.",
+          "tags": [
+            "BA",
+            "ATC-14",
+            "KJFK",
+            "connection",
+            "catering",
+            "EU261"
+          ],
+          "tier": "EPISODIC",
+          "relevance_score": 15
+        },
+        {
+          "memory_id": "HMEM-EP-101",
+          "carrier": "United Airlines",
+          "code": "WX-88",
+          "summary": "Prior Oct 2026 SFO->FRA claim initially denied under WX-88 was overturned after tail log showed hydraulic actuator MEL fault triggered crew Part 117 timeout.",
+          "tags": [
+            "UA",
+            "WX-88",
+            "KSFO",
+            "MEL",
+            "Part 117",
+            "UK261"
+          ],
+          "tier": "EPISODIC",
+          "relevance_score": 14
+        }
+      ],
+      "committed_after_step_6": {
+        "memory_id": "HMEM-PREC-304",
+        "case_ref": "CLM-9041",
+        "carrier": "United Airlines",
+        "verdict": "OVERTURNED_PAY_FULL",
+        "rule_applied": "UK261-ART7-LH",
+        "summary": "United's 'Extraordinary Hub Weather' denial (Code WX-88) is disproved by three independent records: NOAA METAR shows 10-mile clear skies at SFO with 14 of 14 neighboring flights departing on time, inbound aircraft N784UA landed 3 minutes early from Denver, and maintenance log MNT-4410 proves the 265-minute delay was caused by a 148-minute brake temperature sensor replacement (MEL-32-41) that triggered a 117-minute FAA Part 117 pilot duty-limit timeout.",
+        "tags": [
+          "UA",
+          "WX-88",
+          "UK261",
+          "MEL-32-41"
+        ]
+      }
+    }
+  },
+  "zetaris_queries": [
+    {
+      "query_id": "5362ea1d-f0a1-4b50-8ef5-65e1463c0d83",
+      "request_id": "c3a9c93e-5a5a-4998-bc30-124871328626",
+      "sql": "SELECT * FROM zetaris_ops.flight_disruptions WHERE claim_id = 'CLM-9041'",
+      "source_tables_touched": [
+        "zetaris_ops.flight_disruptions"
+      ],
+      "row_count": 1,
+      "latency_ms": 4.22,
+      "mode": "zetaris-sample-federation",
+      "rows": [
+        {
+          "claim_id": "CLM-9041",
+          "flight_number": "UA-418",
+          "carrier_name": "United Airlines",
+          "route": "SFO -> LHR",
+          "distance_km": 8640,
+          "jurisdiction": "UK261",
+          "scheduled_dep_utc": "2026-10-18T19:35:00Z",
+          "actual_arr_delay_min": 265,
+          "door_open_uncertainty_min": 0,
+          "airline_claimed_code": "WX-88",
+          "airline_claimed_reason": "Extraordinary Weather Conditions at Departure Hub",
+          "airline_initial_payout_usd": 0,
+          "care_receipts_usd": 240,
+          "fare_surge_charged_usd": 0,
+          "downgrade_fare_paid_usd": 0,
+          "extra_bag_fee_usd": 0,
+          "tail_number": "N784UA",
+          "dep_airport": "KSFO",
+          "arr_airport": "EGLL",
+          "connection_buffer_min": 0
+        }
+      ]
+    },
+    {
+      "query_id": "899e338a-05bb-4ce0-bafd-373b4a91f0dc",
+      "request_id": "d4928c5c-5cac-461a-8f88-a08a2d7a79bd",
+      "sql": "SELECT * FROM zetaris_rest.faa_metar_atc WHERE claim_id = 'CLM-9041'",
+      "source_tables_touched": [
+        "zetaris_rest.faa_metar_atc"
+      ],
+      "row_count": 1,
+      "latency_ms": 4.23,
+      "mode": "zetaris-sample-federation",
+      "rows": [
+        {
+          "metar_id": "METAR-KSFO-1018",
+          "claim_id": "CLM-9041",
+          "airport_icao": "KSFO",
+          "observation_window_utc": "2026-10-18T18:00Z-23:00Z",
+          "visibility_sm": 10.0,
+          "wind_speed_kt": 8,
+          "crosswind_limit_kt": 35,
+          "weather_phenomena": "CLR (Clear Skies)",
+          "faa_ground_stop_active": 0,
+          "atc_spacing_delay_min": 0,
+          "peer_concourse_departures_total": 14,
+          "peer_concourse_departures_ontime": 14,
+          "atc_bulletin_note": "Zero FAA ground stops or GDP advisories at KSFO; all 14 Concourse G peer flights departed within 12 minutes of schedule."
+        }
+      ]
+    },
+    {
+      "query_id": "a580f153-d89d-42ba-b76d-72f85175e46d",
+      "request_id": "036fd977-8ddb-4a1e-87ac-54bd559f7cc3",
+      "sql": "SELECT * FROM zetaris_policy.passenger_rights_rules WHERE jurisdiction = 'UK261'",
+      "source_tables_touched": [
+        "zetaris_policy.passenger_rights_rules"
+      ],
+      "row_count": 1,
+      "latency_ms": 4.21,
+      "mode": "zetaris-sample-federation",
+      "rows": [
+        {
+          "rule_id": "UK261-ART7-LH",
+          "jurisdiction": "UK261",
+          "applies_to_category": "LONG_HAUL_DELAY",
+          "min_distance_km": 3500,
+          "min_arrival_delay_min": 180,
+          "full_payout_delay_min": 240,
+          "statutory_cash_usd": 650,
+          "half_tier_cash_usd": 325,
+          "duty_of_care_covered": 1,
+          "fare_surge_cap_applies": 1,
+          "downgrade_refund_pct": 75,
+          "legal_citation": "UK261 Art. 7(1)(c) & Wallentin-Hermann: \u00a3520 ($650) for >=240m delay (50% = $325 for 180-239m) when root cause is routine technical fault or crew timeout; Art. 9 hotel/meals always owed."
+        }
+      ]
+    },
+    {
+      "query_id": "72ee28f8-c605-4fd4-8236-ed3a6a9b683b",
+      "request_id": "0b33816e-0386-499b-877d-1e1b8ff1a59d",
+      "sql": "SELECT * FROM zetaris_maint.aircraft_crew_logs WHERE claim_id = 'CLM-9041'",
+      "source_tables_touched": [
+        "zetaris_maint.aircraft_crew_logs"
+      ],
+      "row_count": 1,
+      "latency_ms": 4.21,
+      "mode": "zetaris-sample-federation",
+      "rows": [
+        {
+          "log_id": "MNT-4410",
+          "claim_id": "CLM-9041",
+          "tail_number": "N784UA",
+          "inbound_flight_status": "Landed 3 min early from KDEN (Zero weather or bird strike)",
+          "primary_event_code": "MEL-32-41",
+          "primary_event_category": "CONTROLLABLE_MECHANICAL",
+          "controllable_minutes": 148,
+          "extraordinary_minutes": 0,
+          "crew_timeout_minutes": 117,
+          "log_summary": "Unscheduled hydraulic brake temperature sensor replacement (148m) pushed First Officer past FAA Part 117 duty limit (+117m reserve pilot wait)."
+        }
+      ]
+    },
+    {
+      "query_id": "c4ee5796-f033-479a-820a-c7bbfeba0a69",
+      "request_id": "a7f90128-03a2-442c-821f-3f45fafb2a38",
+      "sql": "SELECT f.claim_id, f.flight_number, f.actual_arr_delay_min, f.door_open_uncertainty_min, w.faa_ground_stop_active, w.atc_spacing_delay_min, m.primary_event_code, m.controllable_minutes, m.crew_timeout_minutes FROM zetaris_ops.flight_disruptions f JOIN zetaris_rest.faa_metar_atc w ON f.claim_id = w.claim_id JOIN zetaris_maint.aircraft_crew_logs m ON f.claim_id = m.claim_id WHERE f.claim_id = 'CLM-9041'",
+      "source_tables_touched": [
+        "zetaris_ops.flight_disruptions",
+        "zetaris_rest.faa_metar_atc",
+        "zetaris_maint.aircraft_crew_logs"
+      ],
+      "row_count": 1,
+      "latency_ms": 4.23,
+      "mode": "zetaris-sample-federation",
+      "rows": [
+        {
+          "claim_id": "CLM-9041",
+          "flight_number": "UA-418",
+          "actual_arr_delay_min": 265,
+          "door_open_uncertainty_min": 0,
+          "faa_ground_stop_active": 0,
+          "atc_spacing_delay_min": 0,
+          "primary_event_code": "MEL-32-41",
+          "controllable_minutes": 148,
+          "crew_timeout_minutes": 117
+        }
+      ]
+    }
+  ],
+  "nightshift_receipts": [
+    {
+      "receipt_id": "NS-RCPT-01-FA236D75",
+      "step_number": 1,
+      "step_name": "Intake & Statutory Scope Agent",
+      "lane": "Lane 1 (Fast Worker)",
+      "requested_model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "model_handled_by": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "provider": "meterless-nightshift (sample-verified)",
+      "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+      "latency_ms": 225.0,
+      "prompt_tokens": 177,
+      "completion_tokens": 47
+    },
+    {
+      "receipt_id": "NS-RCPT-02-C7997275",
+      "step_number": 2,
+      "step_name": "Telemetry Forensics Agent (Round 1 SQL)",
+      "lane": "Lane 1 (Fast Worker)",
+      "requested_model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "model_handled_by": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "provider": "meterless-nightshift (sample-verified)",
+      "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+      "latency_ms": 223.0,
+      "prompt_tokens": 434,
+      "completion_tokens": 55
+    },
+    {
+      "receipt_id": "NS-RCPT-03-F3807398",
+      "step_number": 3,
+      "step_name": "Devil's Advocate Airline Counsel Critic",
+      "lane": "Lane 2 (Deep Worker)",
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "model_handled_by": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "provider": "meterless-nightshift (sample-verified)",
+      "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+      "latency_ms": 445.0,
+      "prompt_tokens": 345,
+      "completion_tokens": 81
+    },
+    {
+      "receipt_id": "NS-RCPT-04-A6B2EC73",
+      "step_number": 4,
+      "step_name": "Telemetry Forensics Agent (Round 2 Tail & Crew SQL)",
+      "lane": "Lane 1 (Fast Worker)",
+      "requested_model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "model_handled_by": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "provider": "meterless-nightshift (sample-verified)",
+      "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+      "latency_ms": 229.0,
+      "prompt_tokens": 281,
+      "completion_tokens": 85
+    },
+    {
+      "receipt_id": "NS-RCPT-05-F5A2B483",
+      "step_number": 5,
+      "step_name": "Counterfactual & Threshold Boundary Engine",
+      "lane": "Lane 2 (Deep Worker)",
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "model_handled_by": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "provider": "meterless-nightshift (sample-verified)",
+      "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+      "latency_ms": 444.0,
+      "prompt_tokens": 1295,
+      "completion_tokens": 43
+    },
+    {
+      "receipt_id": "NS-RCPT-06-69FF3CE6",
+      "step_number": 6,
+      "step_name": "Explainable Legal Brief & Claim Packet Agent",
+      "lane": "Lane 2 (Deep Worker)",
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "model_handled_by": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "provider": "meterless-nightshift (sample-verified)",
+      "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+      "latency_ms": 434.0,
+      "prompt_tokens": 273,
+      "completion_tokens": 132
+    }
+  ],
+  "steps": [
+    {
+      "step_number": 1,
+      "agent_name": "Intake & Statutory Scope Agent",
+      "role_badge": "SCOUT INTENT + H-MEM",
+      "summary": "Classified CLM-9041 (UA-418) as WEATHER_PRETEXT_AUDIT (ambiguity risk 20/100, abstention_watch=False). Recalled 3 H-MEM precedents and delegated Round 1 SQL across 3 Zetaris tables.",
+      "sql_queries": [],
+      "world_version": 1,
+      "markov_capsule": {
+        "step_index": 1,
+        "step_name": "Intake & Statutory Scope Agent",
+        "world_version": 1,
+        "verified_citations": [
+          "HMEM-PREC-302",
+          "HMEM-EP-102",
+          "HMEM-EP-101"
+        ],
+        "open_questions": [
+          "Verify carrier claim code against live METAR and statutory payout rules"
+        ],
+        "active_verdict_draft": "Pending telemetry verification for WEATHER_PRETEXT_AUDIT",
+        "capsule_tokens": 100,
+        "raw_cumulative_tokens": 755
+      },
+      "model_receipt": {
+        "receipt_id": "NS-RCPT-01-FA236D75",
+        "step_number": 1,
+        "step_name": "Intake & Statutory Scope Agent",
+        "lane": "Lane 1 (Fast Worker)",
+        "requested_model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "model_handled_by": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "provider": "meterless-nightshift (sample-verified)",
+        "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+        "latency_ms": 225.0,
+        "prompt_tokens": 177,
+        "completion_tokens": 47
+      }
+    },
+    {
+      "step_number": 2,
+      "agent_name": "Telemetry Forensics Agent (Round 1)",
+      "role_badge": "ZETARIS SQL DISCOVERY",
+      "summary": "Queried flight_disruptions, faa_metar_atc, and passenger_rights_rules via Zetaris. Observed CLR (Clear Skies) at KSFO with 14/14 peer flights on time. Drafting preliminary finding from external weather telemetry.",
+      "sql_queries": [
+        {
+          "query_id": "5362ea1d-f0a1-4b50-8ef5-65e1463c0d83",
+          "request_id": "c3a9c93e-5a5a-4998-bc30-124871328626",
+          "sql": "SELECT * FROM zetaris_ops.flight_disruptions WHERE claim_id = 'CLM-9041'",
+          "source_tables_touched": [
+            "zetaris_ops.flight_disruptions"
+          ],
+          "row_count": 1,
+          "latency_ms": 4.22,
+          "mode": "zetaris-sample-federation",
+          "rows": [
+            {
+              "claim_id": "CLM-9041",
+              "flight_number": "UA-418",
+              "carrier_name": "United Airlines",
+              "route": "SFO -> LHR",
+              "distance_km": 8640,
+              "jurisdiction": "UK261",
+              "scheduled_dep_utc": "2026-10-18T19:35:00Z",
+              "actual_arr_delay_min": 265,
+              "door_open_uncertainty_min": 0,
+              "airline_claimed_code": "WX-88",
+              "airline_claimed_reason": "Extraordinary Weather Conditions at Departure Hub",
+              "airline_initial_payout_usd": 0,
+              "care_receipts_usd": 240,
+              "fare_surge_charged_usd": 0,
+              "downgrade_fare_paid_usd": 0,
+              "extra_bag_fee_usd": 0,
+              "tail_number": "N784UA",
+              "dep_airport": "KSFO",
+              "arr_airport": "EGLL",
+              "connection_buffer_min": 0
+            }
+          ]
+        },
+        {
+          "query_id": "899e338a-05bb-4ce0-bafd-373b4a91f0dc",
+          "request_id": "d4928c5c-5cac-461a-8f88-a08a2d7a79bd",
+          "sql": "SELECT * FROM zetaris_rest.faa_metar_atc WHERE claim_id = 'CLM-9041'",
+          "source_tables_touched": [
+            "zetaris_rest.faa_metar_atc"
+          ],
+          "row_count": 1,
+          "latency_ms": 4.23,
+          "mode": "zetaris-sample-federation",
+          "rows": [
+            {
+              "metar_id": "METAR-KSFO-1018",
+              "claim_id": "CLM-9041",
+              "airport_icao": "KSFO",
+              "observation_window_utc": "2026-10-18T18:00Z-23:00Z",
+              "visibility_sm": 10.0,
+              "wind_speed_kt": 8,
+              "crosswind_limit_kt": 35,
+              "weather_phenomena": "CLR (Clear Skies)",
+              "faa_ground_stop_active": 0,
+              "atc_spacing_delay_min": 0,
+              "peer_concourse_departures_total": 14,
+              "peer_concourse_departures_ontime": 14,
+              "atc_bulletin_note": "Zero FAA ground stops or GDP advisories at KSFO; all 14 Concourse G peer flights departed within 12 minutes of schedule."
+            }
+          ]
+        },
+        {
+          "query_id": "a580f153-d89d-42ba-b76d-72f85175e46d",
+          "request_id": "036fd977-8ddb-4a1e-87ac-54bd559f7cc3",
+          "sql": "SELECT * FROM zetaris_policy.passenger_rights_rules WHERE jurisdiction = 'UK261'",
+          "source_tables_touched": [
+            "zetaris_policy.passenger_rights_rules"
+          ],
+          "row_count": 1,
+          "latency_ms": 4.21,
+          "mode": "zetaris-sample-federation",
+          "rows": [
+            {
+              "rule_id": "UK261-ART7-LH",
+              "jurisdiction": "UK261",
+              "applies_to_category": "LONG_HAUL_DELAY",
+              "min_distance_km": 3500,
+              "min_arrival_delay_min": 180,
+              "full_payout_delay_min": 240,
+              "statutory_cash_usd": 650,
+              "half_tier_cash_usd": 325,
+              "duty_of_care_covered": 1,
+              "fare_surge_cap_applies": 1,
+              "downgrade_refund_pct": 75,
+              "legal_citation": "UK261 Art. 7(1)(c) & Wallentin-Hermann: \u00a3520 ($650) for >=240m delay (50% = $325 for 180-239m) when root cause is routine technical fault or crew timeout; Art. 9 hotel/meals always owed."
+            }
+          ]
+        }
+      ],
+      "world_version": 5,
+      "markov_capsule": {
+        "step_index": 2,
+        "step_name": "Telemetry Forensics Agent (Round 1 SQL)",
+        "world_version": 5,
+        "verified_citations": [
+          "zetaris_ops.flight_disruptions#CLM-9041",
+          "zetaris_rest.faa_metar_atc#METAR-KSFO-1018",
+          "zetaris_policy.passenger_rights_rules#UK261-ART7-LH"
+        ],
+        "open_questions": [
+          "Unverified inbound aircraft tail history, MEL mechanical logs, and crew duty timers"
+        ],
+        "active_verdict_draft": "Preliminary weather check complete; tail-level causation still unproven",
+        "capsule_tokens": 133,
+        "raw_cumulative_tokens": 1958
+      },
+      "model_receipt": {
+        "receipt_id": "NS-RCPT-02-C7997275",
+        "step_number": 2,
+        "step_name": "Telemetry Forensics Agent (Round 1 SQL)",
+        "lane": "Lane 1 (Fast Worker)",
+        "requested_model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "model_handled_by": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "provider": "meterless-nightshift (sample-verified)",
+        "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+        "latency_ms": 223.0,
+        "prompt_tokens": 434,
+        "completion_tokens": 55
+      }
+    },
+    {
+      "step_number": 3,
+      "agent_name": "Devil's Advocate Airline Counsel Critic",
+      "role_badge": "ADVERSARIAL REJECTION",
+      "summary": "PROOF_INSUFFICIENT_KNOCK_ON_DEFENSE: Clear skies at KSFO alone do not win under UK261 Art. 5(3)! Airline counsel will argue inbound tail N784UA suffered an extraordinary bird strike, lightning strike, or ATC restriction on its prior leg. Mandatory Round 2 SQL: query zetaris_maint.aircraft_crew_logs for N784UA.",
+      "sql_queries": [],
+      "world_version": 7,
+      "markov_capsule": {
+        "step_index": 3,
+        "step_name": "Devil's Advocate Airline Counsel Critic",
+        "world_version": 7,
+        "verified_citations": [
+          "zetaris_ops.flight_disruptions#CLM-9041",
+          "zetaris_rest.faa_metar_atc#METAR-KSFO-1018",
+          "zetaris_policy.passenger_rights_rules#UK261-ART7-LH"
+        ],
+        "open_questions": [
+          "Execute tail & crew log audit on N784UA"
+        ],
+        "active_verdict_draft": "BLOCKED BY CRITIC: Awaiting Round 2 aircraft_crew_logs proof",
+        "capsule_tokens": 119,
+        "raw_cumulative_tokens": 3242
+      },
+      "model_receipt": {
+        "receipt_id": "NS-RCPT-03-F3807398",
+        "step_number": 3,
+        "step_name": "Devil's Advocate Airline Counsel Critic",
+        "lane": "Lane 2 (Deep Worker)",
+        "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "model_handled_by": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "provider": "meterless-nightshift (sample-verified)",
+        "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+        "latency_ms": 445.0,
+        "prompt_tokens": 345,
+        "completion_tokens": 81
+      }
+    },
+    {
+      "step_number": 4,
+      "agent_name": "Telemetry Forensics Agent (Round 2)",
+      "role_badge": "TARGETED RE-QUERY",
+      "summary": "Executed Round 2 Zetaris SQL on aircraft_crew_logs#MNT-4410 and federated 3-table join. Confirmed CONTROLLABLE_MECHANICAL (Unscheduled hydraulic brake temperature sensor replacement (148m) pushed First Officer past FAA Part 117 duty limit (+117m reserve pilot wait).) and updated 3 causal hypotheses in CausalWorldModel v11.",
+      "sql_queries": [
+        {
+          "query_id": "72ee28f8-c605-4fd4-8236-ed3a6a9b683b",
+          "request_id": "0b33816e-0386-499b-877d-1e1b8ff1a59d",
+          "sql": "SELECT * FROM zetaris_maint.aircraft_crew_logs WHERE claim_id = 'CLM-9041'",
+          "source_tables_touched": [
+            "zetaris_maint.aircraft_crew_logs"
+          ],
+          "row_count": 1,
+          "latency_ms": 4.21,
+          "mode": "zetaris-sample-federation",
+          "rows": [
+            {
+              "log_id": "MNT-4410",
+              "claim_id": "CLM-9041",
+              "tail_number": "N784UA",
+              "inbound_flight_status": "Landed 3 min early from KDEN (Zero weather or bird strike)",
+              "primary_event_code": "MEL-32-41",
+              "primary_event_category": "CONTROLLABLE_MECHANICAL",
+              "controllable_minutes": 148,
+              "extraordinary_minutes": 0,
+              "crew_timeout_minutes": 117,
+              "log_summary": "Unscheduled hydraulic brake temperature sensor replacement (148m) pushed First Officer past FAA Part 117 duty limit (+117m reserve pilot wait)."
+            }
+          ]
+        },
+        {
+          "query_id": "c4ee5796-f033-479a-820a-c7bbfeba0a69",
+          "request_id": "a7f90128-03a2-442c-821f-3f45fafb2a38",
+          "sql": "SELECT f.claim_id, f.flight_number, f.actual_arr_delay_min, f.door_open_uncertainty_min, w.faa_ground_stop_active, w.atc_spacing_delay_min, m.primary_event_code, m.controllable_minutes, m.crew_timeout_minutes FROM zetaris_ops.flight_disruptions f JOIN zetaris_rest.faa_metar_atc w ON f.claim_id = w.claim_id JOIN zetaris_maint.aircraft_crew_logs m ON f.claim_id = m.claim_id WHERE f.claim_id = 'CLM-9041'",
+          "source_tables_touched": [
+            "zetaris_ops.flight_disruptions",
+            "zetaris_rest.faa_metar_atc",
+            "zetaris_maint.aircraft_crew_logs"
+          ],
+          "row_count": 1,
+          "latency_ms": 4.23,
+          "mode": "zetaris-sample-federation",
+          "rows": [
+            {
+              "claim_id": "CLM-9041",
+              "flight_number": "UA-418",
+              "actual_arr_delay_min": 265,
+              "door_open_uncertainty_min": 0,
+              "faa_ground_stop_active": 0,
+              "atc_spacing_delay_min": 0,
+              "primary_event_code": "MEL-32-41",
+              "controllable_minutes": 148,
+              "crew_timeout_minutes": 117
+            }
+          ]
+        }
+      ],
+      "world_version": 11,
+      "markov_capsule": {
+        "step_index": 4,
+        "step_name": "Telemetry Forensics Agent (Round 2 Tail & Crew SQL)",
+        "world_version": 11,
+        "verified_citations": [
+          "zetaris_ops.flight_disruptions#CLM-9041",
+          "zetaris_rest.faa_metar_atc#METAR-KSFO-1018",
+          "zetaris_policy.passenger_rights_rules#UK261-ART7-LH",
+          "zetaris_maint.aircraft_crew_logs#MNT-4410"
+        ],
+        "open_questions": [
+          "Compute exact counterfactual flip boundaries and confidence calibration"
+        ],
+        "active_verdict_draft": "OVERTURNED_PAY_FULL ($890)",
+        "capsule_tokens": 130,
+        "raw_cumulative_tokens": 4732
+      },
+      "model_receipt": {
+        "receipt_id": "NS-RCPT-04-A6B2EC73",
+        "step_number": 4,
+        "step_name": "Telemetry Forensics Agent (Round 2 Tail & Crew SQL)",
+        "lane": "Lane 1 (Fast Worker)",
+        "requested_model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "model_handled_by": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "provider": "meterless-nightshift (sample-verified)",
+        "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+        "latency_ms": 229.0,
+        "prompt_tokens": 281,
+        "completion_tokens": 85
+      }
+    },
+    {
+      "step_number": 5,
+      "agent_name": "Counterfactual & Threshold Boundary Engine",
+      "role_badge": "COUNTERFACTUAL FLIP MATH",
+      "summary": "Computed 3 counterfactual flip boundaries. Calibrated confidence=97% (abstention_triggered=False). Verdict: OVERTURNED: PAY $890 ($650 UK261 Statutory + $240 Care).",
+      "sql_queries": [],
+      "world_version": 12,
+      "markov_capsule": {
+        "step_index": 5,
+        "step_name": "Counterfactual & Threshold Boundary Engine",
+        "world_version": 12,
+        "verified_citations": [
+          "zetaris_ops.flight_disruptions#CLM-9041",
+          "zetaris_rest.faa_metar_atc#METAR-KSFO-1018",
+          "zetaris_policy.passenger_rights_rules#UK261-ART7-LH",
+          "zetaris_maint.aircraft_crew_logs#MNT-4410"
+        ],
+        "open_questions": [],
+        "active_verdict_draft": "OVERTURNED: PAY $890 ($650 UK261 Statutory + $240 Care)",
+        "capsule_tokens": 118,
+        "raw_cumulative_tokens": 6445
+      },
+      "model_receipt": {
+        "receipt_id": "NS-RCPT-05-F5A2B483",
+        "step_number": 5,
+        "step_name": "Counterfactual & Threshold Boundary Engine",
+        "lane": "Lane 2 (Deep Worker)",
+        "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "model_handled_by": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "provider": "meterless-nightshift (sample-verified)",
+        "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+        "latency_ms": 444.0,
+        "prompt_tokens": 1295,
+        "completion_tokens": 43
+      }
+    },
+    {
+      "step_number": 6,
+      "agent_name": "Explainable Legal Brief & Claim Packet Agent",
+      "role_badge": "CITED PROOF PACKET + H-MEM",
+      "summary": "Generated plain-English causal proof chain, ruled-out defense ledger, and passenger demand brief; persisted precedent to H-MEM.",
+      "sql_queries": [],
+      "world_version": 12,
+      "markov_capsule": {
+        "step_index": 6,
+        "step_name": "Explainable Legal Brief & Claim Packet Agent",
+        "world_version": 12,
+        "verified_citations": [
+          "zetaris_ops.flight_disruptions#CLM-9041",
+          "zetaris_rest.faa_metar_atc#METAR-KSFO-1018",
+          "zetaris_policy.passenger_rights_rules#UK261-ART7-LH",
+          "zetaris_maint.aircraft_crew_logs#MNT-4410",
+          "HMEM-PREC-304"
+        ],
+        "open_questions": [],
+        "active_verdict_draft": "OVERTURNED: PAY $890 ($650 UK261 Statutory + $240 Care)",
+        "capsule_tokens": 123,
+        "raw_cumulative_tokens": 8290
+      },
+      "model_receipt": {
+        "receipt_id": "NS-RCPT-06-69FF3CE6",
+        "step_number": 6,
+        "step_name": "Explainable Legal Brief & Claim Packet Agent",
+        "lane": "Lane 2 (Deep Worker)",
+        "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "model_handled_by": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "provider": "meterless-nightshift (sample-verified)",
+        "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+        "latency_ms": 434.0,
+        "prompt_tokens": 273,
+        "completion_tokens": 132
+      }
+    }
+  ]
+}

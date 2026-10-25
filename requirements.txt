@@ -1,0 +1,5 @@
+# SurgeWhy runs out-of-the-box on standard Python 3.10+ stdlib in SAMPLE_MODE=true.
+# Optional packages for live OpenAI-SDK / HTTP convenience:
+openai>=1.40.0
+requests>=2.31.0
+python-dotenv>=1.0.1

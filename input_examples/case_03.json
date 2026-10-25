@@ -1,0 +1,10 @@
+{
+  "case_id": "CASE-03",
+  "claim_id": "CLM-9104",
+  "flight_number": "DL-809",
+  "passenger_name": "Elena Rostova",
+  "route": "ATL -> MIA",
+  "carrier_denial_notice": "CLAIM DENIED ($0 PAYOUT): Flight DL-809 canceled due to severe thunderstorm microburst and FAA Ground Stop (Code WX-99); $310 rebooking fare difference non-refundable.",
+  "passenger_statement": "There really was a huge storm in Atlanta, so I want an honest answer on whether delay compensation applies, AND why the airline app charged me an extra $310 surge fare just to put me in the same Economy cabin the next morning.",
+  "claimed_rule_Hint": "DOT-2024-REBOOK"
+}

@@ -1,0 +1,49 @@
+{
+  "episodic": [
+    {
+      "memory_id": "HMEM-EP-101",
+      "carrier": "United Airlines",
+      "code": "WX-88",
+      "summary": "Prior Oct 2026 SFO->FRA claim initially denied under WX-88 was overturned after tail log showed hydraulic actuator MEL fault triggered crew Part 117 timeout.",
+      "tags": ["UA", "WX-88", "KSFO", "MEL", "Part 117", "UK261"]
+    },
+    {
+      "memory_id": "HMEM-EP-102",
+      "carrier": "British Airways",
+      "code": "ATC-14",
+      "summary": "Transatlantic missed-connection denials citing ATC-14 frequently bundle minor 10-15m ocean-track spacing with 35-50m controllable gate catering or baggage holds.",
+      "tags": ["BA", "ATC-14", "KJFK", "connection", "catering", "EU261"]
+    }
+  ],
+  "semantic": [
+    {
+      "memory_id": "HMEM-SEM-201",
+      "pattern_name": "Wallentin-Hermann Mechanical vs Weather Pretext",
+      "rule": "Routine component wear, hydraulic sensors, and avionics reboots are inherent to airline operations and NEVER qualify as extraordinary weather or unexpected flight-safety shortcomings.",
+      "tags": ["MEL", "mechanical", "weather", "UK261", "EU261"]
+    },
+    {
+      "memory_id": "HMEM-SEM-202",
+      "pattern_name": "IROPS Dynamic Fare-Surge Cap",
+      "rule": "Even when an FAA Ground Stop proves genuine extraordinary weather ($0 delay cash), charging same-cabin fare-difference surge on involuntary rebooking violates Contract of Carriage Rule 24.",
+      "tags": ["WX-99", "US_DOT", "fare_surge", "rebooking", "ground_stop"]
+    },
+    {
+      "memory_id": "HMEM-SEM-203",
+      "pattern_name": "Henning Door-Open Calibration Rule",
+      "rule": "Under C-452/13, arrival delay is measured at cabin door open, not touchdown or wheel-stop. If sensor uncertainty spans the 180-minute or 240-minute cliff, abstain and request timestamp proof.",
+      "tags": ["door_open", "180", "240", "uncertainty", "EU261", "LH"]
+    }
+  ],
+  "precedent": [
+    {
+      "memory_id": "HMEM-PREC-301",
+      "case_ref": "ADJUDICATION-2026-0819",
+      "carrier": "American Airlines",
+      "verdict": "OVERTURNED",
+      "rule_applied": "DOT-DOWNGRADE-75",
+      "summary": "Commercial tail swap to charter route does not qualify as ATC congestion; awarded 75% cabin downgrade refund plus ancillary bag fee reversal.",
+      "tags": ["AA", "ATC-SWAP", "downgrade", "charter", "US_DOT"]
+    }
+  ]
+}

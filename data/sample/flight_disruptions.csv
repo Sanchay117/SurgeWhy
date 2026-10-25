@@ -1,0 +1,6 @@
+claim_id,flight_number,carrier_name,route,distance_km,jurisdiction,scheduled_dep_utc,actual_arr_delay_min,door_open_uncertainty_min,airline_claimed_code,airline_claimed_reason,airline_initial_payout_usd,care_receipts_usd,fare_surge_charged_usd,downgrade_fare_paid_usd,extra_bag_fee_usd,tail_number,dep_airport,arr_airport,connection_buffer_min
+CLM-9041,UA-418,United Airlines,SFO -> LHR,8640,UK261,2026-10-18T19:35:00Z,265,0,WX-88,Extraordinary Weather Conditions at Departure Hub,0,240,0,0,0,N784UA,KSFO,EGLL,0
+CLM-9088,BA-112,British Airways,JFK -> LHR -> CDG,5830,EU261_UK261,2026-10-19T18:10:00Z,248,0,ATC-14,Air Traffic Control Sequencing Hold at JFK,0,65,0,0,0,G-XWBA,KJFK,LFPG,77
+CLM-9104,DL-809,Delta Air Lines,ATL -> MIA,958,US_DOT,2026-10-20T16:20:00Z,390,0,WX-99,Severe Convective Microburst and Mandatory FAA Ground Stop,0,0,310,0,0,N342DN,KATL,KMIA,0
+CLM-9132,LH-455,Lufthansa,FRA -> SFO,9155,EU261,2026-10-21T10:15:00Z,184,7,WX-DEICE,Airport Authority Mandatory De-Icing Queue at FRA,0,0,0,0,0,D-ABYA,EDDF,KSFO,0
+CLM-9175,AA-204,American Airlines,DFW -> ORD,1290,US_DOT,2026-10-22T08:00:00Z,95,0,ATC-SWAP,Regional Airspace Congestion Equipment Substitution,0,0,0,1280,180,N814AA,KDFW,KORD,0

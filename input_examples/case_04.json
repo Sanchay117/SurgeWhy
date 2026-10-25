@@ -1,0 +1,10 @@
+{
+  "case_id": "CASE-04",
+  "claim_id": "CLM-9132",
+  "flight_number": "LH-455",
+  "passenger_name": "Jonas Weber",
+  "route": "FRA -> SFO",
+  "carrier_denial_notice": "CLAIM DENIED ($0 PAYOUT): Departure delayed by Frankfurt Airport mandatory de-icing queue, and aircraft touched down less than 3 hours late (Code WX-DEICE).",
+  "passenger_statement": "We waited almost two hours at the gate in Frankfurt fixing cabin emergency lights before we ever Taxied to de-icing, and when we landed in SFO we waited several minutes for the jetbridge door to open around 3 hours late. Am I owed €300 ($325)?",
+  "claimed_rule_Hint": "EU261-HENNING-DOOR"
+}

@@ -1,0 +1,29 @@
+# Secrets and local environment files
+.env
+.env.*
+!.env.example
+
+# Python caches and virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+.pytest_cache/
+
+# Runtime state and logs
+*.log
+.DS_Store
+data/runtime_hmem.json
+
+# Video build artifacts and node_modules
+node_modules
+node_modules/
+video/node_modules
+video/node_modules/
+video/public/vo/*.wav
+video/public/music/*.wav
+video/public/sfx/*.wav
+video/out/surgewhy.mp4
+*.pdf

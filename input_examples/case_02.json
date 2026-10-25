@@ -1,0 +1,10 @@
+{
+  "case_id": "CASE-02",
+  "claim_id": "CLM-9088",
+  "flight_number": "BA-112",
+  "passenger_name": "Liam O'Connor",
+  "route": "JFK -> LHR -> CDG",
+  "carrier_denial_notice": "CLAIM DENIED ($0 PAYOUT): Missed Heathrow connection to Paris caused by Air Traffic Control sequencing at JFK (Code ATC-14).",
+  "passenger_statement": "My ticket had a 77-minute layover at Heathrow, way above the 45-minute minimum. At JFK the captain announced they were still loading catering carts for 40 minutes, and I missed my Paris flight by just 9 minutes, arriving 4 hours 8 minutes late with $65 in terminal meal receipts.",
+  "claimed_rule_Hint": "EU261-ART7-CONN"
+}

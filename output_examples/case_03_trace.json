@@ -1,0 +1,1048 @@
+{
+  "case_id": "CASE-03",
+  "claim_id": "CLM-9104",
+  "passenger_name": "Elena Rostova",
+  "flight_number": "DL-809",
+  "carrier_name": "Delta Air Lines",
+  "route": "ATL -> MIA",
+  "jurisdiction": "US_DOT",
+  "carrier_denial_notice": "CLAIM DENIED ($0 PAYOUT): Flight DL-809 canceled due to severe thunderstorm microburst and FAA Ground Stop (Code WX-99); $310 rebooking fare difference non-refundable.",
+  "passenger_statement": "There really was a huge storm in Atlanta, so I want an honest answer on whether delay compensation applies, AND why the airline app charged me an extra $310 surge fare just to put me in the same Economy cabin the next morning.",
+  "verdict_code": "SPLIT_WEATHER_UPHELD_REFUND_SURGE",
+  "verdict_banner": "SPLIT VERDICT: WEATHER UPHELD ($0 DELAY CASH) -> REFUND $310 UNLAWFUL FARE SURGE",
+  "airline_initial_payout_usd": 0,
+  "statutory_cash_owed_usd": 0,
+  "care_or_fee_recovery_usd": 310,
+  "total_owed_usd": 310,
+  "confidence_score": 0.96,
+  "abstention_triggered": false,
+  "missing_evidence_request": "",
+  "plain_english_why": "Honest split verdict: Delta was telling the truth about the storm - NOAA METAR and FAA Ground Stop GS-ATL-09 confirm a severe 54-knot microburst grounded 30 of 32 flights in Atlanta, so $0 cash delay compensation is owed. HOWEVER, charging you a $310 surge fare difference to rebook into the same Economy cabin after a flight cancellation violates Contract of Carriage Rule 24 and DOT rebooking protections, so Delta owes an immediate $310 refund.",
+  "causal_chain": [
+    {
+      "node": "1. Airline Claim",
+      "fact": "Canceled under WX-99 severe storm; refused refund of $310 rebooking fare surge",
+      "citation": "zetaris_ops.flight_disruptions#CLM-9104"
+    },
+    {
+      "node": "2. Storm Verified True",
+      "fact": "KATL hit by 54kt microburst, 0.5 SM visibility, 142m FAA Ground Stop GS-ATL-09 (30/32 grounded)",
+      "citation": "zetaris_rest.faa_metar_atc#METAR-KATL-1020"
+    },
+    {
+      "node": "3. Aircraft Confirmed Clean",
+      "fact": "Tail N342DN had zero MEL mechanical faults and fresh crew (WX-GND-91)",
+      "citation": "zetaris_maint.aircraft_crew_logs#WX-GND-91"
+    },
+    {
+      "node": "4. Surge Fee Unlawful",
+      "fact": "Rule 24 & 14 CFR Part 260 prohibit same-cabin fare-difference charges on canceled flights -> Refund $310",
+      "citation": "zetaris_policy.passenger_rights_rules#DOT-2024-REBOOK"
+    }
+  ],
+  "ruled_out_hypotheses": [
+    {
+      "hypothesis_id": "HYP-AIRLINE-DEFENSE",
+      "title": "H1: Extraordinary Microburst & FAA Ground Stop (Delay Cash Defense)",
+      "status": "UPHELD_AIRLINE",
+      "supporting_citations": [
+        "zetaris_rest.faa_metar_atc#METAR-KATL-1020",
+        "zetaris_maint.aircraft_crew_logs#WX-GND-91"
+      ],
+      "refuting_citations": [],
+      "explanation": "54kt microburst and mandatory FAA Ground Stop GS-ATL-09 legally excuse delay compensation ($0 cash)."
+    },
+    {
+      "hypothesis_id": "HYP-SURGE-FEE-VIOLATION",
+      "title": "H2: Unlawful $310 Dynamic Fare-Surge on Involuntary Same-Cabin Rebooking",
+      "status": "VERIFIED_ROOT_CAUSE",
+      "supporting_citations": [
+        "zetaris_ops.flight_disruptions#CLM-9104",
+        "zetaris_policy.passenger_rights_rules#DOT-2024-REBOOK"
+      ],
+      "refuting_citations": [],
+      "explanation": "Even in extraordinary weather, involuntary same-cabin rebooking onto next available carrier flight must be $0 fare difference."
+    }
+  ],
+  "counterfactuals": [
+    {
+      "id": "CF-01",
+      "parameter": "Cabin Selected on Rebooking",
+      "actual_value": "Same Cabin (Economy -> Economy)",
+      "flip_threshold": "Voluntary Passenger Upgrade to First Class",
+      "flipped_outcome": "If passenger voluntarily selected First Class when Economy seats were open, the $310 fare difference becomes valid ($310 -> $0)."
+    },
+    {
+      "id": "CF-02",
+      "parameter": "Root Cancellation Cause",
+      "actual_value": "FAA Ground Stop GS-ATL-09 (Weather)",
+      "flip_threshold": "Controllable Crew or Mechanical Cancellation",
+      "flipped_outcome": "Unlocks additional DOT controllable hotel/meal/ground-transport reimbursement on top of the $310 surge refund."
+    }
+  ],
+  "simulator_defaults": {
+    "arrival_delay_min": 390,
+    "faa_ground_stop_active": 1,
+    "controllable_maint_min": 0,
+    "door_uncertainty_min": 0
+  },
+  "demand_letter": "NOTICE OF UNLAWFUL IROPS FARE-DIFFERENCE CHARGE ($310.00) - CLAIM CLM-9104 / FLIGHT DL-809 (ATL->MIA)\n1. We confirm METAR-KATL-1020 & GS-ATL-09 substantiate extraordinary weather; $0 delay compensation is claimed.\n2. However, billing $310.00 fare difference for involuntary same-cabin Economy rebooking after carrier cancellation violates Rule 24.\n3. Refund $310.00 to original payment method within 7 business days per 14 CFR Part 260.",
+  "engines_telemetry": {
+    "scout_intent": {
+      "intent_type": "GENUINE_STORM_SURGE_CAP",
+      "dispute_severity": "MEDIUM",
+      "ambiguity_risk_score": 22,
+      "abstention_watch": false,
+      "required_zetaris_tables": [
+        "zetaris_ops.flight_disruptions",
+        "zetaris_rest.faa_metar_atc",
+        "zetaris_policy.passenger_rights_rules",
+        "zetaris_maint.aircraft_crew_logs"
+      ],
+      "lane_plan": {
+        "step_1_intake": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "step_2_forensics_r1": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "step_3_counsel_critic": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "step_4_forensics_r2": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "step_5_counterfactual_engine": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "step_6_legal_brief": "nvidia/nemotron-3.5-super-vl-120b-a12b"
+      },
+      "rationale": "Separates genuine severe weather defense on delay cash from unlawful dynamic fare-surge rebooking charge."
+    },
+    "world_model": {
+      "claim_id": "CLM-9104",
+      "version": 11,
+      "evidence_nodes": {
+        "EV-OPS-01": {
+          "node_id": "EV-OPS-01",
+          "source_table": "zetaris_ops.flight_disruptions",
+          "primary_key": "CLM-9104",
+          "field_summary": "DL-809 (ATL -> MIA) delayed 390m (door uncertainty +/-0m); airline cited WX-99 (Severe Convective Microburst and Mandatory FAA Ground Stop) and paid $0.",
+          "supports_side": "AIRLINE_CLAIM_BASELINE",
+          "recorded_by": "Telemetry Forensics R1",
+          "world_version": 2
+        },
+        "EV-METAR-02": {
+          "node_id": "EV-METAR-02",
+          "source_table": "zetaris_rest.faa_metar_atc",
+          "primary_key": "METAR-KATL-1020",
+          "field_summary": "KATL visibility 0.5 SM, wind 54kt, ground_stop=1, ATC hold=142m, peer on-time=2/32.",
+          "supports_side": "AIRLINE",
+          "recorded_by": "Telemetry Forensics R1",
+          "world_version": 3
+        },
+        "EV-POL-03": {
+          "node_id": "EV-POL-03",
+          "source_table": "zetaris_policy.passenger_rights_rules",
+          "primary_key": "DOT-2024-REBOOK",
+          "field_summary": "14 CFR Part 260 & Carrier Contract of Carriage Rule 24: Extraordinary weather carries $0 statutory cash delay payout, but carrier MUST rebook next-available same-cabin seat at $0 fare difference.",
+          "supports_side": "STATUTORY_RULE",
+          "recorded_by": "Telemetry Forensics R1",
+          "world_version": 4
+        },
+        "EV-MAINT-04": {
+          "node_id": "EV-MAINT-04",
+          "source_table": "zetaris_maint.aircraft_crew_logs",
+          "primary_key": "WX-GND-91",
+          "field_summary": "Tail N342DN (Parked at Gate T7 overnight): GS-ATL-09 [EXTRAORDINARY_WEATHER] - Aircraft healthy with zero MEL defects and fresh crew; dispatch legally blocked by FAA microburst Ground Stop GS-ATL-09.",
+          "supports_side": "AIRLINE",
+          "recorded_by": "Telemetry Forensics R2",
+          "world_version": 8
+        }
+      },
+      "hypotheses": {
+        "HYP-AIRLINE-DEFENSE": {
+          "hypothesis_id": "HYP-AIRLINE-DEFENSE",
+          "title": "H1: Extraordinary Microburst & FAA Ground Stop (Delay Cash Defense)",
+          "proposed_by": "Telemetry Forensics R1",
+          "status": "UPHELD_AIRLINE",
+          "supporting_citations": [
+            "zetaris_rest.faa_metar_atc#METAR-KATL-1020",
+            "zetaris_maint.aircraft_crew_logs#WX-GND-91"
+          ],
+          "refuting_citations": [],
+          "explanation": "54kt microburst and mandatory FAA Ground Stop GS-ATL-09 legally excuse delay compensation ($0 cash)."
+        },
+        "HYP-SURGE-FEE-VIOLATION": {
+          "hypothesis_id": "HYP-SURGE-FEE-VIOLATION",
+          "title": "H2: Unlawful $310 Dynamic Fare-Surge on Involuntary Same-Cabin Rebooking",
+          "proposed_by": "Telemetry Forensics R2",
+          "status": "VERIFIED_ROOT_CAUSE",
+          "supporting_citations": [
+            "zetaris_ops.flight_disruptions#CLM-9104",
+            "zetaris_policy.passenger_rights_rules#DOT-2024-REBOOK"
+          ],
+          "refuting_citations": [],
+          "explanation": "Even in extraordinary weather, involuntary same-cabin rebooking onto next available carrier flight must be $0 fare difference."
+        }
+      },
+      "critic_challenges": [
+        {
+          "challenge_id": "CRIT-CLM-9104",
+          "verdict": "REVISION_REQUIRED",
+          "objection": "PROOF_INSUFFICIENT_DUAL_CLAIM_SPLIT: METAR confirms a 54kt microburst Ground Stop, which blocks delay cash, but we must verify tail N342DN had no pre-existing MEL mechanical ground lock AND separately adjudicate whether the $310 rebooking fare-surge charge violates US DOT / Rule 24 caps.",
+          "required_sql_followup": "SELECT * FROM zetaris_maint.aircraft_crew_logs WHERE claim_id = 'CLM-9104' AND tail_number = 'N342DN'",
+          "world_version": 7
+        }
+      ],
+      "counterfactual_deltas": [
+        {
+          "id": "CF-01",
+          "parameter": "Cabin Selected on Rebooking",
+          "actual_value": "Same Cabin (Economy -> Economy)",
+          "flip_threshold": "Voluntary Passenger Upgrade to First Class",
+          "flipped_outcome": "If passenger voluntarily selected First Class when Economy seats were open, the $310 fare difference becomes valid ($310 -> $0)."
+        },
+        {
+          "id": "CF-02",
+          "parameter": "Root Cancellation Cause",
+          "actual_value": "FAA Ground Stop GS-ATL-09 (Weather)",
+          "flip_threshold": "Controllable Crew or Mechanical Cancellation",
+          "flipped_outcome": "Unlocks additional DOT controllable hotel/meal/ground-transport reimbursement on top of the $310 surge refund."
+        }
+      ],
+      "history": [
+        {
+          "version": 1,
+          "agent": "system",
+          "event": "Initialized CausalWorldModel for CLM-9104"
+        },
+        {
+          "version": 2,
+          "agent": "Telemetry Forensics R1",
+          "event": "Added evidence EV-OPS-01 from zetaris_ops.flight_disruptions#CLM-9104"
+        },
+        {
+          "version": 3,
+          "agent": "Telemetry Forensics R1",
+          "event": "Added evidence EV-METAR-02 from zetaris_rest.faa_metar_atc#METAR-KATL-1020"
+        },
+        {
+          "version": 4,
+          "agent": "Telemetry Forensics R1",
+          "event": "Added evidence EV-POL-03 from zetaris_policy.passenger_rights_rules#DOT-2024-REBOOK"
+        },
+        {
+          "version": 5,
+          "agent": "Telemetry Forensics R1",
+          "event": "Hypothesis HYP-AIRLINE-DEFENSE -> PROPOSED"
+        },
+        {
+          "version": 6,
+          "agent": "Airline Counsel Critic",
+          "event": "Hypothesis HYP-AIRLINE-DEFENSE -> CHALLENGED_BY_COUNSEL"
+        },
+        {
+          "version": 7,
+          "agent": "Airline Counsel Critic",
+          "event": "Critic challenge CRIT-CLM-9104: REVISION_REQUIRED"
+        },
+        {
+          "version": 8,
+          "agent": "Telemetry Forensics R2",
+          "event": "Added evidence EV-MAINT-04 from zetaris_maint.aircraft_crew_logs#WX-GND-91"
+        },
+        {
+          "version": 9,
+          "agent": "Telemetry Forensics R2",
+          "event": "Hypothesis HYP-AIRLINE-DEFENSE -> UPHELD_AIRLINE"
+        },
+        {
+          "version": 10,
+          "agent": "Telemetry Forensics R2",
+          "event": "Hypothesis HYP-SURGE-FEE-VIOLATION -> VERIFIED_ROOT_CAUSE"
+        },
+        {
+          "version": 11,
+          "agent": "Counterfactual Engine",
+          "event": "Recorded 2 counterfactual flip rules"
+        }
+      ]
+    },
+    "markovian": {
+      "steps_compressed": 6,
+      "naive_cumulative_tokens": 9199,
+      "markovian_total_tokens": 745,
+      "token_reduction_pct": 91.9,
+      "max_capsule_budget": 380,
+      "capsules": [
+        {
+          "step_index": 1,
+          "step_name": "Intake & Statutory Scope Agent",
+          "world_version": 1,
+          "verified_citations": [
+            "HMEM-SEM-202",
+            "HMEM-PREC-303",
+            "HMEM-SEM-201"
+          ],
+          "open_questions": [
+            "Verify carrier claim code against live METAR and statutory payout rules"
+          ],
+          "active_verdict_draft": "Pending telemetry verification for GENUINE_STORM_SURGE_CAP",
+          "capsule_tokens": 102,
+          "raw_cumulative_tokens": 808
+        },
+        {
+          "step_index": 2,
+          "step_name": "Telemetry Forensics Agent (Round 1 SQL)",
+          "world_version": 5,
+          "verified_citations": [
+            "zetaris_ops.flight_disruptions#CLM-9104",
+            "zetaris_rest.faa_metar_atc#METAR-KATL-1020",
+            "zetaris_policy.passenger_rights_rules#DOT-2024-REBOOK"
+          ],
+          "open_questions": [
+            "Unverified inbound aircraft tail history, MEL mechanical logs, and crew duty timers"
+          ],
+          "active_verdict_draft": "Preliminary weather check complete; tail-level causation still unproven",
+          "capsule_tokens": 134,
+          "raw_cumulative_tokens": 2222
+        },
+        {
+          "step_index": 3,
+          "step_name": "Devil's Advocate Airline Counsel Critic",
+          "world_version": 7,
+          "verified_citations": [
+            "zetaris_ops.flight_disruptions#CLM-9104",
+            "zetaris_rest.faa_metar_atc#METAR-KATL-1020",
+            "zetaris_policy.passenger_rights_rules#DOT-2024-REBOOK"
+          ],
+          "open_questions": [
+            "Execute tail & crew log audit on N342DN"
+          ],
+          "active_verdict_draft": "BLOCKED BY CRITIC: Awaiting Round 2 aircraft_crew_logs proof",
+          "capsule_tokens": 119,
+          "raw_cumulative_tokens": 3711
+        },
+        {
+          "step_index": 4,
+          "step_name": "Telemetry Forensics Agent (Round 2 Tail & Crew SQL)",
+          "world_version": 10,
+          "verified_citations": [
+            "zetaris_ops.flight_disruptions#CLM-9104",
+            "zetaris_rest.faa_metar_atc#METAR-KATL-1020",
+            "zetaris_policy.passenger_rights_rules#DOT-2024-REBOOK",
+            "zetaris_maint.aircraft_crew_logs#WX-GND-91"
+          ],
+          "open_questions": [
+            "Compute exact counterfactual flip boundaries and confidence calibration"
+          ],
+          "active_verdict_draft": "SPLIT_WEATHER_UPHELD_REFUND_SURGE ($310)",
+          "capsule_tokens": 134,
+          "raw_cumulative_tokens": 5391
+        },
+        {
+          "step_index": 5,
+          "step_name": "Counterfactual & Threshold Boundary Engine",
+          "world_version": 11,
+          "verified_citations": [
+            "zetaris_ops.flight_disruptions#CLM-9104",
+            "zetaris_rest.faa_metar_atc#METAR-KATL-1020",
+            "zetaris_policy.passenger_rights_rules#DOT-2024-REBOOK",
+            "zetaris_maint.aircraft_crew_logs#WX-GND-91"
+          ],
+          "open_questions": [],
+          "active_verdict_draft": "SPLIT VERDICT: WEATHER UPHELD ($0 DELAY CASH) -> REFUND $310 UNLAWFUL FARE SURGE",
+          "capsule_tokens": 126,
+          "raw_cumulative_tokens": 7238
+        },
+        {
+          "step_index": 6,
+          "step_name": "Explainable Legal Brief & Claim Packet Agent",
+          "world_version": 11,
+          "verified_citations": [
+            "zetaris_ops.flight_disruptions#CLM-9104",
+            "zetaris_rest.faa_metar_atc#METAR-KATL-1020",
+            "zetaris_policy.passenger_rights_rules#DOT-2024-REBOOK",
+            "zetaris_maint.aircraft_crew_logs#WX-GND-91",
+            "HMEM-PREC-305"
+          ],
+          "open_questions": [],
+          "active_verdict_draft": "SPLIT VERDICT: WEATHER UPHELD ($0 DELAY CASH) -> REFUND $310 UNLAWFUL FARE SURGE",
+          "capsule_tokens": 130,
+          "raw_cumulative_tokens": 9199
+        }
+      ]
+    },
+    "h_mem": {
+      "recalled_before_step_1": [
+        {
+          "memory_id": "HMEM-SEM-202",
+          "pattern_name": "IROPS Dynamic Fare-Surge Cap",
+          "rule": "Even when an FAA Ground Stop proves genuine extraordinary weather ($0 delay cash), charging same-cabin fare-difference surge on involuntary rebooking violates Contract of Carriage Rule 24.",
+          "tags": [
+            "WX-99",
+            "US_DOT",
+            "fare_surge",
+            "rebooking",
+            "ground_stop"
+          ],
+          "tier": "SEMANTIC",
+          "relevance_score": 25
+        },
+        {
+          "memory_id": "HMEM-PREC-303",
+          "case_ref": "CLM-9132",
+          "carrier": "Lufthansa",
+          "verdict": "ABSTAIN_NEEDS_PASSENGER_EVIDENCE",
+          "rule_applied": "EU261-HENNING-DOOR",
+          "summary": "SurgeWhy proved 108 minutes of your delay was a controllable emergency-light bus repair (MNT-4482), defeating Lufthansa's de-icing excuse! However, SurgeWhy refuses to guess on your payout yet: under EU law (Germanwings v. Henning), the 180-minute cliff for \u20ac300 ($325) is measured at the exact minute the cabin door opens. Because wheel-stop was +177m ($0) and jetbridge dock was +184m ($325) - a 7-minute sensor gap right across the 180m line - one timestamped arrival screenshot flips this claim to a 96%-confident $325 win.",
+          "tags": [
+            "LH",
+            "WX-DEICE",
+            "EU261",
+            "MEL-33-12"
+          ],
+          "tier": "PRECEDENT",
+          "relevance_score": 14
+        },
+        {
+          "memory_id": "HMEM-SEM-201",
+          "pattern_name": "Wallentin-Hermann Mechanical vs Weather Pretext",
+          "rule": "Routine component wear, hydraulic sensors, and avionics reboots are inherent to airline operations and NEVER qualify as extraordinary weather or unexpected flight-safety shortcomings.",
+          "tags": [
+            "MEL",
+            "mechanical",
+            "weather",
+            "UK261",
+            "EU261"
+          ],
+          "tier": "SEMANTIC",
+          "relevance_score": 14
+        }
+      ],
+      "committed_after_step_6": {
+        "memory_id": "HMEM-PREC-305",
+        "case_ref": "CLM-9104",
+        "carrier": "Delta Air Lines",
+        "verdict": "SPLIT_WEATHER_UPHELD_REFUND_SURGE",
+        "rule_applied": "DOT-2024-REBOOK",
+        "summary": "Honest split verdict: Delta was telling the truth about the storm - NOAA METAR and FAA Ground Stop GS-ATL-09 confirm a severe 54-knot microburst grounded 30 of 32 flights in Atlanta, so $0 cash delay compensation is owed. HOWEVER, charging you a $310 surge fare difference to rebook into the same Economy cabin after a flight cancellation violates Contract of Carriage Rule 24 and DOT rebooking protections, so Delta owes an immediate $310 refund.",
+        "tags": [
+          "DL",
+          "WX-99",
+          "US_DOT",
+          "GS-ATL-09"
+        ]
+      }
+    }
+  },
+  "zetaris_queries": [
+    {
+      "query_id": "6d6c05a0-e309-4519-aeb4-8ef1de8f5260",
+      "request_id": "97eeb971-6311-47a7-936b-309fa7e803c0",
+      "sql": "SELECT * FROM zetaris_ops.flight_disruptions WHERE claim_id = 'CLM-9104'",
+      "source_tables_touched": [
+        "zetaris_ops.flight_disruptions"
+      ],
+      "row_count": 1,
+      "latency_ms": 4.22,
+      "mode": "zetaris-sample-federation",
+      "rows": [
+        {
+          "claim_id": "CLM-9104",
+          "flight_number": "DL-809",
+          "carrier_name": "Delta Air Lines",
+          "route": "ATL -> MIA",
+          "distance_km": 958,
+          "jurisdiction": "US_DOT",
+          "scheduled_dep_utc": "2026-10-20T16:20:00Z",
+          "actual_arr_delay_min": 390,
+          "door_open_uncertainty_min": 0,
+          "airline_claimed_code": "WX-99",
+          "airline_claimed_reason": "Severe Convective Microburst and Mandatory FAA Ground Stop",
+          "airline_initial_payout_usd": 0,
+          "care_receipts_usd": 0,
+          "fare_surge_charged_usd": 310,
+          "downgrade_fare_paid_usd": 0,
+          "extra_bag_fee_usd": 0,
+          "tail_number": "N342DN",
+          "dep_airport": "KATL",
+          "arr_airport": "KMIA",
+          "connection_buffer_min": 0
+        }
+      ]
+    },
+    {
+      "query_id": "20133262-6f11-4841-b68c-8eeab381fb26",
+      "request_id": "c45b73fa-4bf6-4464-ad65-2be17632f811",
+      "sql": "SELECT * FROM zetaris_rest.faa_metar_atc WHERE claim_id = 'CLM-9104'",
+      "source_tables_touched": [
+        "zetaris_rest.faa_metar_atc"
+      ],
+      "row_count": 1,
+      "latency_ms": 4.21,
+      "mode": "zetaris-sample-federation",
+      "rows": [
+        {
+          "metar_id": "METAR-KATL-1020",
+          "claim_id": "CLM-9104",
+          "airport_icao": "KATL",
+          "observation_window_utc": "2026-10-20T15:30Z-19:00Z",
+          "visibility_sm": 0.5,
+          "wind_speed_kt": 54,
+          "crosswind_limit_kt": 35,
+          "weather_phenomena": "+TSRA WS (Severe Thunderstorm & Microburst Wind Shear)",
+          "faa_ground_stop_active": 1,
+          "atc_spacing_delay_min": 142,
+          "peer_concourse_departures_total": 32,
+          "peer_concourse_departures_ontime": 2,
+          "atc_bulletin_note": "Mandatory FAA Ground Stop GS-ATL-09 active for 142 minutes due to 54kt microburst; 30 of 32 Concourse T departures grounded."
+        }
+      ]
+    },
+    {
+      "query_id": "2d4b8397-472f-4a94-bc28-218904fe99a5",
+      "request_id": "53a3465d-21b7-47a1-a0d7-976008c29dc2",
+      "sql": "SELECT * FROM zetaris_policy.passenger_rights_rules WHERE jurisdiction = 'US_DOT'",
+      "source_tables_touched": [
+        "zetaris_policy.passenger_rights_rules"
+      ],
+      "row_count": 2,
+      "latency_ms": 4.21,
+      "mode": "zetaris-sample-federation",
+      "rows": [
+        {
+          "rule_id": "DOT-2024-REBOOK",
+          "jurisdiction": "US_DOT",
+          "applies_to_category": "WEATHER_CANCELLATION_SURGE",
+          "min_distance_km": 0,
+          "min_arrival_delay_min": 180,
+          "full_payout_delay_min": 360,
+          "statutory_cash_usd": 0,
+          "half_tier_cash_usd": 0,
+          "duty_of_care_covered": 0,
+          "fare_surge_cap_applies": 1,
+          "downgrade_refund_pct": 75,
+          "legal_citation": "14 CFR Part 260 & Carrier Contract of Carriage Rule 24: Extraordinary weather carries $0 statutory cash delay payout, but carrier MUST rebook next-available same-cabin seat at $0 fare difference."
+        },
+        {
+          "rule_id": "DOT-DOWNGRADE-75",
+          "jurisdiction": "US_DOT",
+          "applies_to_category": "COMMERCIAL_SWAP_DOWNGRADE",
+          "min_distance_km": 0,
+          "min_arrival_delay_min": 0,
+          "full_payout_delay_min": 180,
+          "statutory_cash_usd": 0,
+          "half_tier_cash_usd": 0,
+          "duty_of_care_covered": 1,
+          "fare_surge_cap_applies": 1,
+          "downgrade_refund_pct": 75,
+          "legal_citation": "US DOT Refund Rule & Montreal/Tariff Downgrade Provision: Commercial tail swap + involuntary Business-to-Economy downgrade requires 75% segment fare refund plus 100% ancillary fee reversal."
+        }
+      ]
+    },
+    {
+      "query_id": "dcdfb611-08fa-467a-8f4f-52e55b3fc72f",
+      "request_id": "e1c06d86-6aee-44de-9fe3-1991ac50cc90",
+      "sql": "SELECT * FROM zetaris_maint.aircraft_crew_logs WHERE claim_id = 'CLM-9104'",
+      "source_tables_touched": [
+        "zetaris_maint.aircraft_crew_logs"
+      ],
+      "row_count": 1,
+      "latency_ms": 4.21,
+      "mode": "zetaris-sample-federation",
+      "rows": [
+        {
+          "log_id": "WX-GND-91",
+          "claim_id": "CLM-9104",
+          "tail_number": "N342DN",
+          "inbound_flight_status": "Parked at Gate T7 overnight",
+          "primary_event_code": "GS-ATL-09",
+          "primary_event_category": "EXTRAORDINARY_WEATHER",
+          "controllable_minutes": 0,
+          "extraordinary_minutes": 390,
+          "crew_timeout_minutes": 0,
+          "log_summary": "Aircraft healthy with zero MEL defects and fresh crew; dispatch legally blocked by FAA microburst Ground Stop GS-ATL-09."
+        }
+      ]
+    },
+    {
+      "query_id": "ac0a4dce-f796-4020-a033-587440bdba59",
+      "request_id": "333938b2-eb0d-470e-89fa-5bd12035448f",
+      "sql": "SELECT f.claim_id, f.flight_number, f.actual_arr_delay_min, f.door_open_uncertainty_min, w.faa_ground_stop_active, w.atc_spacing_delay_min, m.primary_event_code, m.controllable_minutes, m.crew_timeout_minutes FROM zetaris_ops.flight_disruptions f JOIN zetaris_rest.faa_metar_atc w ON f.claim_id = w.claim_id JOIN zetaris_maint.aircraft_crew_logs m ON f.claim_id = m.claim_id WHERE f.claim_id = 'CLM-9104'",
+      "source_tables_touched": [
+        "zetaris_ops.flight_disruptions",
+        "zetaris_rest.faa_metar_atc",
+        "zetaris_maint.aircraft_crew_logs"
+      ],
+      "row_count": 1,
+      "latency_ms": 4.23,
+      "mode": "zetaris-sample-federation",
+      "rows": [
+        {
+          "claim_id": "CLM-9104",
+          "flight_number": "DL-809",
+          "actual_arr_delay_min": 390,
+          "door_open_uncertainty_min": 0,
+          "faa_ground_stop_active": 1,
+          "atc_spacing_delay_min": 142,
+          "primary_event_code": "GS-ATL-09",
+          "controllable_minutes": 0,
+          "crew_timeout_minutes": 0
+        }
+      ]
+    }
+  ],
+  "nightshift_receipts": [
+    {
+      "receipt_id": "NS-RCPT-01-FA236D75",
+      "step_number": 1,
+      "step_name": "Intake & Statutory Scope Agent",
+      "lane": "Lane 1 (Fast Worker)",
+      "requested_model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "model_handled_by": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "provider": "meterless-nightshift (sample-verified)",
+      "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+      "latency_ms": 225.0,
+      "prompt_tokens": 187,
+      "completion_tokens": 48
+    },
+    {
+      "receipt_id": "NS-RCPT-02-C7997275",
+      "step_number": 2,
+      "step_name": "Telemetry Forensics Agent (Round 1 SQL)",
+      "lane": "Lane 1 (Fast Worker)",
+      "requested_model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "model_handled_by": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "provider": "meterless-nightshift (sample-verified)",
+      "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+      "latency_ms": 223.0,
+      "prompt_tokens": 449,
+      "completion_tokens": 65
+    },
+    {
+      "receipt_id": "NS-RCPT-03-F3807398",
+      "step_number": 3,
+      "step_name": "Devil's Advocate Airline Counsel Critic",
+      "lane": "Lane 2 (Deep Worker)",
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "model_handled_by": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "provider": "meterless-nightshift (sample-verified)",
+      "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+      "latency_ms": 445.0,
+      "prompt_tokens": 331,
+      "completion_tokens": 75
+    },
+    {
+      "receipt_id": "NS-RCPT-04-A6B2EC73",
+      "step_number": 4,
+      "step_name": "Telemetry Forensics Agent (Round 2 Tail & Crew SQL)",
+      "lane": "Lane 1 (Fast Worker)",
+      "requested_model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "model_handled_by": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "provider": "meterless-nightshift (sample-verified)",
+      "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+      "latency_ms": 229.0,
+      "prompt_tokens": 266,
+      "completion_tokens": 78
+    },
+    {
+      "receipt_id": "NS-RCPT-05-F5A2B483",
+      "step_number": 5,
+      "step_name": "Counterfactual & Threshold Boundary Engine",
+      "lane": "Lane 2 (Deep Worker)",
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "model_handled_by": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "provider": "meterless-nightshift (sample-verified)",
+      "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+      "latency_ms": 444.0,
+      "prompt_tokens": 1159,
+      "completion_tokens": 49
+    },
+    {
+      "receipt_id": "NS-RCPT-06-69FF3CE6",
+      "step_number": 6,
+      "step_name": "Explainable Legal Brief & Claim Packet Agent",
+      "lane": "Lane 2 (Deep Worker)",
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "model_handled_by": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "provider": "meterless-nightshift (sample-verified)",
+      "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+      "latency_ms": 434.0,
+      "prompt_tokens": 278,
+      "completion_tokens": 114
+    }
+  ],
+  "steps": [
+    {
+      "step_number": 1,
+      "agent_name": "Intake & Statutory Scope Agent",
+      "role_badge": "SCOUT INTENT + H-MEM",
+      "summary": "Classified CLM-9104 (DL-809) as GENUINE_STORM_SURGE_CAP (ambiguity risk 22/100, abstention_watch=False). Recalled 3 H-MEM precedents and delegated Round 1 SQL across 3 Zetaris tables.",
+      "sql_queries": [],
+      "world_version": 1,
+      "markov_capsule": {
+        "step_index": 1,
+        "step_name": "Intake & Statutory Scope Agent",
+        "world_version": 1,
+        "verified_citations": [
+          "HMEM-SEM-202",
+          "HMEM-PREC-303",
+          "HMEM-SEM-201"
+        ],
+        "open_questions": [
+          "Verify carrier claim code against live METAR and statutory payout rules"
+        ],
+        "active_verdict_draft": "Pending telemetry verification for GENUINE_STORM_SURGE_CAP",
+        "capsule_tokens": 102,
+        "raw_cumulative_tokens": 808
+      },
+      "model_receipt": {
+        "receipt_id": "NS-RCPT-01-FA236D75",
+        "step_number": 1,
+        "step_name": "Intake & Statutory Scope Agent",
+        "lane": "Lane 1 (Fast Worker)",
+        "requested_model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "model_handled_by": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "provider": "meterless-nightshift (sample-verified)",
+        "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+        "latency_ms": 225.0,
+        "prompt_tokens": 187,
+        "completion_tokens": 48
+      }
+    },
+    {
+      "step_number": 2,
+      "agent_name": "Telemetry Forensics Agent (Round 1)",
+      "role_badge": "ZETARIS SQL DISCOVERY",
+      "summary": "Queried flight_disruptions, faa_metar_atc, and passenger_rights_rules via Zetaris. Observed +TSRA WS (Severe Thunderstorm & Microburst Wind Shear) at KATL with 2/32 peer flights on time. Drafting preliminary finding from external weather telemetry.",
+      "sql_queries": [
+        {
+          "query_id": "6d6c05a0-e309-4519-aeb4-8ef1de8f5260",
+          "request_id": "97eeb971-6311-47a7-936b-309fa7e803c0",
+          "sql": "SELECT * FROM zetaris_ops.flight_disruptions WHERE claim_id = 'CLM-9104'",
+          "source_tables_touched": [
+            "zetaris_ops.flight_disruptions"
+          ],
+          "row_count": 1,
+          "latency_ms": 4.22,
+          "mode": "zetaris-sample-federation",
+          "rows": [
+            {
+              "claim_id": "CLM-9104",
+              "flight_number": "DL-809",
+              "carrier_name": "Delta Air Lines",
+              "route": "ATL -> MIA",
+              "distance_km": 958,
+              "jurisdiction": "US_DOT",
+              "scheduled_dep_utc": "2026-10-20T16:20:00Z",
+              "actual_arr_delay_min": 390,
+              "door_open_uncertainty_min": 0,
+              "airline_claimed_code": "WX-99",
+              "airline_claimed_reason": "Severe Convective Microburst and Mandatory FAA Ground Stop",
+              "airline_initial_payout_usd": 0,
+              "care_receipts_usd": 0,
+              "fare_surge_charged_usd": 310,
+              "downgrade_fare_paid_usd": 0,
+              "extra_bag_fee_usd": 0,
+              "tail_number": "N342DN",
+              "dep_airport": "KATL",
+              "arr_airport": "KMIA",
+              "connection_buffer_min": 0
+            }
+          ]
+        },
+        {
+          "query_id": "20133262-6f11-4841-b68c-8eeab381fb26",
+          "request_id": "c45b73fa-4bf6-4464-ad65-2be17632f811",
+          "sql": "SELECT * FROM zetaris_rest.faa_metar_atc WHERE claim_id = 'CLM-9104'",
+          "source_tables_touched": [
+            "zetaris_rest.faa_metar_atc"
+          ],
+          "row_count": 1,
+          "latency_ms": 4.21,
+          "mode": "zetaris-sample-federation",
+          "rows": [
+            {
+              "metar_id": "METAR-KATL-1020",
+              "claim_id": "CLM-9104",
+              "airport_icao": "KATL",
+              "observation_window_utc": "2026-10-20T15:30Z-19:00Z",
+              "visibility_sm": 0.5,
+              "wind_speed_kt": 54,
+              "crosswind_limit_kt": 35,
+              "weather_phenomena": "+TSRA WS (Severe Thunderstorm & Microburst Wind Shear)",
+              "faa_ground_stop_active": 1,
+              "atc_spacing_delay_min": 142,
+              "peer_concourse_departures_total": 32,
+              "peer_concourse_departures_ontime": 2,
+              "atc_bulletin_note": "Mandatory FAA Ground Stop GS-ATL-09 active for 142 minutes due to 54kt microburst; 30 of 32 Concourse T departures grounded."
+            }
+          ]
+        },
+        {
+          "query_id": "2d4b8397-472f-4a94-bc28-218904fe99a5",
+          "request_id": "53a3465d-21b7-47a1-a0d7-976008c29dc2",
+          "sql": "SELECT * FROM zetaris_policy.passenger_rights_rules WHERE jurisdiction = 'US_DOT'",
+          "source_tables_touched": [
+            "zetaris_policy.passenger_rights_rules"
+          ],
+          "row_count": 2,
+          "latency_ms": 4.21,
+          "mode": "zetaris-sample-federation",
+          "rows": [
+            {
+              "rule_id": "DOT-2024-REBOOK",
+              "jurisdiction": "US_DOT",
+              "applies_to_category": "WEATHER_CANCELLATION_SURGE",
+              "min_distance_km": 0,
+              "min_arrival_delay_min": 180,
+              "full_payout_delay_min": 360,
+              "statutory_cash_usd": 0,
+              "half_tier_cash_usd": 0,
+              "duty_of_care_covered": 0,
+              "fare_surge_cap_applies": 1,
+              "downgrade_refund_pct": 75,
+              "legal_citation": "14 CFR Part 260 & Carrier Contract of Carriage Rule 24: Extraordinary weather carries $0 statutory cash delay payout, but carrier MUST rebook next-available same-cabin seat at $0 fare difference."
+            },
+            {
+              "rule_id": "DOT-DOWNGRADE-75",
+              "jurisdiction": "US_DOT",
+              "applies_to_category": "COMMERCIAL_SWAP_DOWNGRADE",
+              "min_distance_km": 0,
+              "min_arrival_delay_min": 0,
+              "full_payout_delay_min": 180,
+              "statutory_cash_usd": 0,
+              "half_tier_cash_usd": 0,
+              "duty_of_care_covered": 1,
+              "fare_surge_cap_applies": 1,
+              "downgrade_refund_pct": 75,
+              "legal_citation": "US DOT Refund Rule & Montreal/Tariff Downgrade Provision: Commercial tail swap + involuntary Business-to-Economy downgrade requires 75% segment fare refund plus 100% ancillary fee reversal."
+            }
+          ]
+        }
+      ],
+      "world_version": 5,
+      "markov_capsule": {
+        "step_index": 2,
+        "step_name": "Telemetry Forensics Agent (Round 1 SQL)",
+        "world_version": 5,
+        "verified_citations": [
+          "zetaris_ops.flight_disruptions#CLM-9104",
+          "zetaris_rest.faa_metar_atc#METAR-KATL-1020",
+          "zetaris_policy.passenger_rights_rules#DOT-2024-REBOOK"
+        ],
+        "open_questions": [
+          "Unverified inbound aircraft tail history, MEL mechanical logs, and crew duty timers"
+        ],
+        "active_verdict_draft": "Preliminary weather check complete; tail-level causation still unproven",
+        "capsule_tokens": 134,
+        "raw_cumulative_tokens": 2222
+      },
+      "model_receipt": {
+        "receipt_id": "NS-RCPT-02-C7997275",
+        "step_number": 2,
+        "step_name": "Telemetry Forensics Agent (Round 1 SQL)",
+        "lane": "Lane 1 (Fast Worker)",
+        "requested_model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "model_handled_by": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "provider": "meterless-nightshift (sample-verified)",
+        "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+        "latency_ms": 223.0,
+        "prompt_tokens": 449,
+        "completion_tokens": 65
+      }
+    },
+    {
+      "step_number": 3,
+      "agent_name": "Devil's Advocate Airline Counsel Critic",
+      "role_badge": "ADVERSARIAL REJECTION",
+      "summary": "PROOF_INSUFFICIENT_DUAL_CLAIM_SPLIT: METAR confirms a 54kt microburst Ground Stop, which blocks delay cash, but we must verify tail N342DN had no pre-existing MEL mechanical ground lock AND separately adjudicate whether the $310 rebooking fare-surge charge violates US DOT / Rule 24 caps.",
+      "sql_queries": [],
+      "world_version": 7,
+      "markov_capsule": {
+        "step_index": 3,
+        "step_name": "Devil's Advocate Airline Counsel Critic",
+        "world_version": 7,
+        "verified_citations": [
+          "zetaris_ops.flight_disruptions#CLM-9104",
+          "zetaris_rest.faa_metar_atc#METAR-KATL-1020",
+          "zetaris_policy.passenger_rights_rules#DOT-2024-REBOOK"
+        ],
+        "open_questions": [
+          "Execute tail & crew log audit on N342DN"
+        ],
+        "active_verdict_draft": "BLOCKED BY CRITIC: Awaiting Round 2 aircraft_crew_logs proof",
+        "capsule_tokens": 119,
+        "raw_cumulative_tokens": 3711
+      },
+      "model_receipt": {
+        "receipt_id": "NS-RCPT-03-F3807398",
+        "step_number": 3,
+        "step_name": "Devil's Advocate Airline Counsel Critic",
+        "lane": "Lane 2 (Deep Worker)",
+        "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "model_handled_by": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "provider": "meterless-nightshift (sample-verified)",
+        "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+        "latency_ms": 445.0,
+        "prompt_tokens": 331,
+        "completion_tokens": 75
+      }
+    },
+    {
+      "step_number": 4,
+      "agent_name": "Telemetry Forensics Agent (Round 2)",
+      "role_badge": "TARGETED RE-QUERY",
+      "summary": "Executed Round 2 Zetaris SQL on aircraft_crew_logs#WX-GND-91 and federated 3-table join. Confirmed EXTRAORDINARY_WEATHER (Aircraft healthy with zero MEL defects and fresh crew; dispatch legally blocked by FAA microburst Ground Stop GS-ATL-09.) and updated 2 causal hypotheses in CausalWorldModel v10.",
+      "sql_queries": [
+        {
+          "query_id": "dcdfb611-08fa-467a-8f4f-52e55b3fc72f",
+          "request_id": "e1c06d86-6aee-44de-9fe3-1991ac50cc90",
+          "sql": "SELECT * FROM zetaris_maint.aircraft_crew_logs WHERE claim_id = 'CLM-9104'",
+          "source_tables_touched": [
+            "zetaris_maint.aircraft_crew_logs"
+          ],
+          "row_count": 1,
+          "latency_ms": 4.21,
+          "mode": "zetaris-sample-federation",
+          "rows": [
+            {
+              "log_id": "WX-GND-91",
+              "claim_id": "CLM-9104",
+              "tail_number": "N342DN",
+              "inbound_flight_status": "Parked at Gate T7 overnight",
+              "primary_event_code": "GS-ATL-09",
+              "primary_event_category": "EXTRAORDINARY_WEATHER",
+              "controllable_minutes": 0,
+              "extraordinary_minutes": 390,
+              "crew_timeout_minutes": 0,
+              "log_summary": "Aircraft healthy with zero MEL defects and fresh crew; dispatch legally blocked by FAA microburst Ground Stop GS-ATL-09."
+            }
+          ]
+        },
+        {
+          "query_id": "ac0a4dce-f796-4020-a033-587440bdba59",
+          "request_id": "333938b2-eb0d-470e-89fa-5bd12035448f",
+          "sql": "SELECT f.claim_id, f.flight_number, f.actual_arr_delay_min, f.door_open_uncertainty_min, w.faa_ground_stop_active, w.atc_spacing_delay_min, m.primary_event_code, m.controllable_minutes, m.crew_timeout_minutes FROM zetaris_ops.flight_disruptions f JOIN zetaris_rest.faa_metar_atc w ON f.claim_id = w.claim_id JOIN zetaris_maint.aircraft_crew_logs m ON f.claim_id = m.claim_id WHERE f.claim_id = 'CLM-9104'",
+          "source_tables_touched": [
+            "zetaris_ops.flight_disruptions",
+            "zetaris_rest.faa_metar_atc",
+            "zetaris_maint.aircraft_crew_logs"
+          ],
+          "row_count": 1,
+          "latency_ms": 4.23,
+          "mode": "zetaris-sample-federation",
+          "rows": [
+            {
+              "claim_id": "CLM-9104",
+              "flight_number": "DL-809",
+              "actual_arr_delay_min": 390,
+              "door_open_uncertainty_min": 0,
+              "faa_ground_stop_active": 1,
+              "atc_spacing_delay_min": 142,
+              "primary_event_code": "GS-ATL-09",
+              "controllable_minutes": 0,
+              "crew_timeout_minutes": 0
+            }
+          ]
+        }
+      ],
+      "world_version": 10,
+      "markov_capsule": {
+        "step_index": 4,
+        "step_name": "Telemetry Forensics Agent (Round 2 Tail & Crew SQL)",
+        "world_version": 10,
+        "verified_citations": [
+          "zetaris_ops.flight_disruptions#CLM-9104",
+          "zetaris_rest.faa_metar_atc#METAR-KATL-1020",
+          "zetaris_policy.passenger_rights_rules#DOT-2024-REBOOK",
+          "zetaris_maint.aircraft_crew_logs#WX-GND-91"
+        ],
+        "open_questions": [
+          "Compute exact counterfactual flip boundaries and confidence calibration"
+        ],
+        "active_verdict_draft": "SPLIT_WEATHER_UPHELD_REFUND_SURGE ($310)",
+        "capsule_tokens": 134,
+        "raw_cumulative_tokens": 5391
+      },
+      "model_receipt": {
+        "receipt_id": "NS-RCPT-04-A6B2EC73",
+        "step_number": 4,
+        "step_name": "Telemetry Forensics Agent (Round 2 Tail & Crew SQL)",
+        "lane": "Lane 1 (Fast Worker)",
+        "requested_model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "model_handled_by": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "provider": "meterless-nightshift (sample-verified)",
+        "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+        "latency_ms": 229.0,
+        "prompt_tokens": 266,
+        "completion_tokens": 78
+      }
+    },
+    {
+      "step_number": 5,
+      "agent_name": "Counterfactual & Threshold Boundary Engine",
+      "role_badge": "COUNTERFACTUAL FLIP MATH",
+      "summary": "Computed 2 counterfactual flip boundaries. Calibrated confidence=96% (abstention_triggered=False). Verdict: SPLIT VERDICT: WEATHER UPHELD ($0 DELAY CASH) -> REFUND $310 UNLAWFUL FARE SURGE.",
+      "sql_queries": [],
+      "world_version": 11,
+      "markov_capsule": {
+        "step_index": 5,
+        "step_name": "Counterfactual & Threshold Boundary Engine",
+        "world_version": 11,
+        "verified_citations": [
+          "zetaris_ops.flight_disruptions#CLM-9104",
+          "zetaris_rest.faa_metar_atc#METAR-KATL-1020",
+          "zetaris_policy.passenger_rights_rules#DOT-2024-REBOOK",
+          "zetaris_maint.aircraft_crew_logs#WX-GND-91"
+        ],
+        "open_questions": [],
+        "active_verdict_draft": "SPLIT VERDICT: WEATHER UPHELD ($0 DELAY CASH) -> REFUND $310 UNLAWFUL FARE SURGE",
+        "capsule_tokens": 126,
+        "raw_cumulative_tokens": 7238
+      },
+      "model_receipt": {
+        "receipt_id": "NS-RCPT-05-F5A2B483",
+        "step_number": 5,
+        "step_name": "Counterfactual & Threshold Boundary Engine",
+        "lane": "Lane 2 (Deep Worker)",
+        "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "model_handled_by": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "provider": "meterless-nightshift (sample-verified)",
+        "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+        "latency_ms": 444.0,
+        "prompt_tokens": 1159,
+        "completion_tokens": 49
+      }
+    },
+    {
+      "step_number": 6,
+      "agent_name": "Explainable Legal Brief & Claim Packet Agent",
+      "role_badge": "CITED PROOF PACKET + H-MEM",
+      "summary": "Generated plain-English causal proof chain, ruled-out defense ledger, and passenger demand brief; persisted precedent to H-MEM.",
+      "sql_queries": [],
+      "world_version": 11,
+      "markov_capsule": {
+        "step_index": 6,
+        "step_name": "Explainable Legal Brief & Claim Packet Agent",
+        "world_version": 11,
+        "verified_citations": [
+          "zetaris_ops.flight_disruptions#CLM-9104",
+          "zetaris_rest.faa_metar_atc#METAR-KATL-1020",
+          "zetaris_policy.passenger_rights_rules#DOT-2024-REBOOK",
+          "zetaris_maint.aircraft_crew_logs#WX-GND-91",
+          "HMEM-PREC-305"
+        ],
+        "open_questions": [],
+        "active_verdict_draft": "SPLIT VERDICT: WEATHER UPHELD ($0 DELAY CASH) -> REFUND $310 UNLAWFUL FARE SURGE",
+        "capsule_tokens": 130,
+        "raw_cumulative_tokens": 9199
+      },
+      "model_receipt": {
+        "receipt_id": "NS-RCPT-06-69FF3CE6",
+        "step_number": 6,
+        "step_name": "Explainable Legal Brief & Claim Packet Agent",
+        "lane": "Lane 2 (Deep Worker)",
+        "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "model_handled_by": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "provider": "meterless-nightshift (sample-verified)",
+        "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+        "latency_ms": 434.0,
+        "prompt_tokens": 278,
+        "completion_tokens": 114
+      }
+    }
+  ]
+}

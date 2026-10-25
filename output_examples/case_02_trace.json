@@ -1,0 +1,1040 @@
+{
+  "case_id": "CASE-02",
+  "claim_id": "CLM-9088",
+  "passenger_name": "Liam O'Connor",
+  "flight_number": "BA-112",
+  "carrier_name": "British Airways",
+  "route": "JFK -> LHR -> CDG",
+  "jurisdiction": "EU261_UK261",
+  "carrier_denial_notice": "CLAIM DENIED ($0 PAYOUT): Missed Heathrow connection to Paris caused by Air Traffic Control sequencing at JFK (Code ATC-14).",
+  "passenger_statement": "My ticket had a 77-minute layover at Heathrow, way above the 45-minute minimum. At JFK the captain announced they were still loading catering carts for 40 minutes, and I missed my Paris flight by just 9 minutes, arriving 4 hours 8 minutes late with $65 in terminal meal receipts.",
+  "verdict_code": "OVERTURNED_PAY_FULL",
+  "verdict_banner": "OVERTURNED: PAY $715 ($650 EU261/UK261 + $65 Meal Care)",
+  "airline_initial_payout_usd": 0,
+  "statutory_cash_owed_usd": 650,
+  "care_or_fee_recovery_usd": 65,
+  "total_owed_usd": 715,
+  "confidence_score": 0.95,
+  "abstention_triggered": false,
+  "missing_evidence_request": "",
+  "plain_english_why": "British Airways blamed JFK Air Traffic Control (Code ATC-14) for missing your Heathrow->Paris connection, but FAA logs show ATC delayed departure by only 14 minutes out of your 77-minute connection buffer. Gate log OPS-CAT-19 reveals BA held the plane 41 minutes for late catering carts and gate staffing; without BA's 41-minute catering delay, you would have landed with 63 minutes to spare (18 minutes above the 45-minute connection minimum) and made your Paris flight.",
+  "causal_chain": [
+    {
+      "node": "1. Airline Claim",
+      "fact": "Carrier blamed JFK ATC sequencing (ATC-14) for missed LHR connection ($0 paid)",
+      "citation": "zetaris_ops.flight_disruptions#CLM-9088"
+    },
+    {
+      "node": "2. ATC Share Quantified",
+      "fact": "KJFK ocean-track spacing added only 14m (leaving 63m of passenger's 77m layover)",
+      "citation": "zetaris_rest.faa_metar_atc#METAR-KJFK-1019"
+    },
+    {
+      "node": "3. But-For Cause Proven",
+      "fact": "Tail G-XWBA held 41m for late catering & gate staffing (63m - 41m = 22m < 45m MCT -> missed flight)",
+      "citation": "zetaris_maint.aircraft_crew_logs#OPS-CAT-19"
+    },
+    {
+      "node": "4. Final Arrival Rule",
+      "fact": "248m final Paris arrival delay >= 240m under Folkerts (C-11/11) = $650 + $65 = $715",
+      "citation": "zetaris_policy.passenger_rights_rules#EU261-ART7-CONN"
+    }
+  ],
+  "ruled_out_hypotheses": [
+    {
+      "hypothesis_id": "HYP-AIRLINE-DEFENSE",
+      "title": "H1: JFK ATC Sequencing Caused Missed Connection (Code ATC-14)",
+      "status": "FALSIFIED",
+      "supporting_citations": [
+        "zetaris_ops.flight_disruptions#CLM-9088"
+      ],
+      "refuting_citations": [
+        "zetaris_rest.faa_metar_atc#METAR-KJFK-1019"
+      ],
+      "explanation": "14m ATC spacing alone leaves 63m layover at LHR, exceeding the 45m minimum connection time by 18 minutes."
+    },
+    {
+      "hypothesis_id": "HYP-ROOT-CATERING-HOLD",
+      "title": "H2: Controllable 41m Catering & Gate Staffing Hold (OPS-CAT-19)",
+      "status": "VERIFIED_ROOT_CAUSE",
+      "supporting_citations": [
+        "zetaris_maint.aircraft_crew_logs#OPS-CAT-19",
+        "zetaris_policy.passenger_rights_rules#EU261-ART7-CONN"
+      ],
+      "refuting_citations": [],
+      "explanation": "Removing the 41m controllable gate hold preserves the connection; under Folkerts, final arrival delay (248m) governs payout."
+    }
+  ],
+  "counterfactuals": [
+    {
+      "id": "CF-01",
+      "parameter": "Controllable Catering Hold",
+      "actual_value": "41 min",
+      "flip_threshold": "<= 18 min",
+      "flipped_outcome": "Passenger arrives at LHR with >= 45 min MCT, catches CDG flight, and delay payout flips to $0."
+    },
+    {
+      "id": "CF-02",
+      "parameter": "JFK ATC Spacing Hold",
+      "actual_value": "14 min",
+      "flip_threshold": ">= 33 min (alone breaking 45m MCT)",
+      "flipped_outcome": "ATC becomes independent sufficient cause of missed connection ($650 cash -> $0)."
+    },
+    {
+      "id": "CF-03",
+      "parameter": "Rebooked Paris Arrival Delay",
+      "actual_value": "248 min",
+      "flip_threshold": "180 to 239 min (-9 min faster)",
+      "flipped_outcome": "Article 7(2) 50% reduction applies, cutting cash compensation from $650 to $325."
+    }
+  ],
+  "simulator_defaults": {
+    "arrival_delay_min": 248,
+    "faa_ground_stop_active": 0,
+    "controllable_maint_min": 41,
+    "door_uncertainty_min": 0
+  },
+  "demand_letter": "DEMAND FOR EU261/UK261 COMPENSATION ($715.00) - CLAIM CLM-9088 / FLIGHT BA-112 (JFK->LHR->CDG)\n1. METAR-KJFK-1019 shows JFK ATC spacing accounted for only 14 minutes, leaving 63m of a 77m connection (above 45m MCT).\n2. Operational log OPS-CAT-19 confirms 41m controllable catering and boarding delay caused the 9-minute connection miss.\n3. Under EU261 Art. 7 & Folkerts (C-11/11) for 248m final arrival delay at CDG, remit $650 (\u20ac600) + $65 Art. 9 meals = $715.00.",
+  "engines_telemetry": {
+    "scout_intent": {
+      "intent_type": "MISSED_CONNECTION_BUT_FOR",
+      "dispute_severity": "HIGH",
+      "ambiguity_risk_score": 26,
+      "abstention_watch": false,
+      "required_zetaris_tables": [
+        "zetaris_ops.flight_disruptions",
+        "zetaris_rest.faa_metar_atc",
+        "zetaris_policy.passenger_rights_rules",
+        "zetaris_maint.aircraft_crew_logs"
+      ],
+      "lane_plan": {
+        "step_1_intake": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "step_2_forensics_r1": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "step_3_counsel_critic": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "step_4_forensics_r2": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "step_5_counterfactual_engine": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "step_6_legal_brief": "nvidia/nemotron-3.5-super-vl-120b-a12b"
+      },
+      "rationale": "Detects tight-connection denial blaming ATC; requires counterfactual but-for subtraction of controllable gate hold."
+    },
+    "world_model": {
+      "claim_id": "CLM-9088",
+      "version": 11,
+      "evidence_nodes": {
+        "EV-OPS-01": {
+          "node_id": "EV-OPS-01",
+          "source_table": "zetaris_ops.flight_disruptions",
+          "primary_key": "CLM-9088",
+          "field_summary": "BA-112 (JFK -> LHR -> CDG) delayed 248m (door uncertainty +/-0m); airline cited ATC-14 (Air Traffic Control Sequencing Hold at JFK) and paid $0.",
+          "supports_side": "AIRLINE_CLAIM_BASELINE",
+          "recorded_by": "Telemetry Forensics R1",
+          "world_version": 2
+        },
+        "EV-METAR-02": {
+          "node_id": "EV-METAR-02",
+          "source_table": "zetaris_rest.faa_metar_atc",
+          "primary_key": "METAR-KJFK-1019",
+          "field_summary": "KJFK visibility 9.0 SM, wind 14kt, ground_stop=0, ATC hold=14m, peer on-time=16/18.",
+          "supports_side": "PASSENGER",
+          "recorded_by": "Telemetry Forensics R1",
+          "world_version": 3
+        },
+        "EV-POL-03": {
+          "node_id": "EV-POL-03",
+          "source_table": "zetaris_policy.passenger_rights_rules",
+          "primary_key": "EU261-ART7-CONN",
+          "field_summary": "EU261 Art. 7 & Folkerts (C-11/11): Final destination arrival delay >=240m caused by controllable feeder delay triggers \u20ac600 ($650) plus Art. 9 meal care.",
+          "supports_side": "STATUTORY_RULE",
+          "recorded_by": "Telemetry Forensics R1",
+          "world_version": 4
+        },
+        "EV-MAINT-04": {
+          "node_id": "EV-MAINT-04",
+          "source_table": "zetaris_maint.aircraft_crew_logs",
+          "primary_key": "OPS-CAT-19",
+          "field_summary": "Tail G-XWBA (Landed on time from EGLL): OPS-CAT-19 [CONTROLLABLE_OPERATIONS] - Gate doors held open 41 minutes due to late premium-cabin catering truck upload and short-staffed boarding podium; ATC spacing added only 14 minutes.",
+          "supports_side": "PASSENGER",
+          "recorded_by": "Telemetry Forensics R2",
+          "world_version": 8
+        }
+      },
+      "hypotheses": {
+        "HYP-AIRLINE-DEFENSE": {
+          "hypothesis_id": "HYP-AIRLINE-DEFENSE",
+          "title": "H1: JFK ATC Sequencing Caused Missed Connection (Code ATC-14)",
+          "proposed_by": "Telemetry Forensics R1",
+          "status": "FALSIFIED",
+          "supporting_citations": [
+            "zetaris_ops.flight_disruptions#CLM-9088"
+          ],
+          "refuting_citations": [
+            "zetaris_rest.faa_metar_atc#METAR-KJFK-1019"
+          ],
+          "explanation": "14m ATC spacing alone leaves 63m layover at LHR, exceeding the 45m minimum connection time by 18 minutes."
+        },
+        "HYP-ROOT-CATERING-HOLD": {
+          "hypothesis_id": "HYP-ROOT-CATERING-HOLD",
+          "title": "H2: Controllable 41m Catering & Gate Staffing Hold (OPS-CAT-19)",
+          "proposed_by": "Telemetry Forensics R2",
+          "status": "VERIFIED_ROOT_CAUSE",
+          "supporting_citations": [
+            "zetaris_maint.aircraft_crew_logs#OPS-CAT-19",
+            "zetaris_policy.passenger_rights_rules#EU261-ART7-CONN"
+          ],
+          "refuting_citations": [],
+          "explanation": "Removing the 41m controllable gate hold preserves the connection; under Folkerts, final arrival delay (248m) governs payout."
+        }
+      },
+      "critic_challenges": [
+        {
+          "challenge_id": "CRIT-CLM-9088",
+          "verdict": "REVISION_REQUIRED",
+          "objection": "PROOF_INSUFFICIENT_GATE_HOLD_CAUSE: Proving JFK ATC spacing was only 14m does not explain the remaining delay minutes on BA-112. What if a security alert or medical emergency held the gate? Mandatory Round 2 SQL: query zetaris_maint.aircraft_crew_logs for tail G-XWBA to establish strict but-for causation.",
+          "required_sql_followup": "SELECT * FROM zetaris_maint.aircraft_crew_logs WHERE claim_id = 'CLM-9088' AND tail_number = 'G-XWBA'",
+          "world_version": 7
+        }
+      ],
+      "counterfactual_deltas": [
+        {
+          "id": "CF-01",
+          "parameter": "Controllable Catering Hold",
+          "actual_value": "41 min",
+          "flip_threshold": "<= 18 min",
+          "flipped_outcome": "Passenger arrives at LHR with >= 45 min MCT, catches CDG flight, and delay payout flips to $0."
+        },
+        {
+          "id": "CF-02",
+          "parameter": "JFK ATC Spacing Hold",
+          "actual_value": "14 min",
+          "flip_threshold": ">= 33 min (alone breaking 45m MCT)",
+          "flipped_outcome": "ATC becomes independent sufficient cause of missed connection ($650 cash -> $0)."
+        },
+        {
+          "id": "CF-03",
+          "parameter": "Rebooked Paris Arrival Delay",
+          "actual_value": "248 min",
+          "flip_threshold": "180 to 239 min (-9 min faster)",
+          "flipped_outcome": "Article 7(2) 50% reduction applies, cutting cash compensation from $650 to $325."
+        }
+      ],
+      "history": [
+        {
+          "version": 1,
+          "agent": "system",
+          "event": "Initialized CausalWorldModel for CLM-9088"
+        },
+        {
+          "version": 2,
+          "agent": "Telemetry Forensics R1",
+          "event": "Added evidence EV-OPS-01 from zetaris_ops.flight_disruptions#CLM-9088"
+        },
+        {
+          "version": 3,
+          "agent": "Telemetry Forensics R1",
+          "event": "Added evidence EV-METAR-02 from zetaris_rest.faa_metar_atc#METAR-KJFK-1019"
+        },
+        {
+          "version": 4,
+          "agent": "Telemetry Forensics R1",
+          "event": "Added evidence EV-POL-03 from zetaris_policy.passenger_rights_rules#EU261-ART7-CONN"
+        },
+        {
+          "version": 5,
+          "agent": "Telemetry Forensics R1",
+          "event": "Hypothesis HYP-AIRLINE-DEFENSE -> PROPOSED"
+        },
+        {
+          "version": 6,
+          "agent": "Airline Counsel Critic",
+          "event": "Hypothesis HYP-AIRLINE-DEFENSE -> CHALLENGED_BY_COUNSEL"
+        },
+        {
+          "version": 7,
+          "agent": "Airline Counsel Critic",
+          "event": "Critic challenge CRIT-CLM-9088: REVISION_REQUIRED"
+        },
+        {
+          "version": 8,
+          "agent": "Telemetry Forensics R2",
+          "event": "Added evidence EV-MAINT-04 from zetaris_maint.aircraft_crew_logs#OPS-CAT-19"
+        },
+        {
+          "version": 9,
+          "agent": "Telemetry Forensics R2",
+          "event": "Hypothesis HYP-AIRLINE-DEFENSE -> FALSIFIED"
+        },
+        {
+          "version": 10,
+          "agent": "Telemetry Forensics R2",
+          "event": "Hypothesis HYP-ROOT-CATERING-HOLD -> VERIFIED_ROOT_CAUSE"
+        },
+        {
+          "version": 11,
+          "agent": "Counterfactual Engine",
+          "event": "Recorded 3 counterfactual flip rules"
+        }
+      ]
+    },
+    "markovian": {
+      "steps_compressed": 6,
+      "naive_cumulative_tokens": 8961,
+      "markovian_total_tokens": 729,
+      "token_reduction_pct": 91.9,
+      "max_capsule_budget": 380,
+      "capsules": [
+        {
+          "step_index": 1,
+          "step_name": "Intake & Statutory Scope Agent",
+          "world_version": 1,
+          "verified_citations": [
+            "HMEM-EP-102",
+            "HMEM-PREC-303",
+            "HMEM-PREC-304"
+          ],
+          "open_questions": [
+            "Verify carrier claim code against live METAR and statutory payout rules"
+          ],
+          "active_verdict_draft": "Pending telemetry verification for MISSED_CONNECTION_BUT_FOR",
+          "capsule_tokens": 102,
+          "raw_cumulative_tokens": 891
+        },
+        {
+          "step_index": 2,
+          "step_name": "Telemetry Forensics Agent (Round 1 SQL)",
+          "world_version": 5,
+          "verified_citations": [
+            "zetaris_ops.flight_disruptions#CLM-9088",
+            "zetaris_rest.faa_metar_atc#METAR-KJFK-1019",
+            "zetaris_policy.passenger_rights_rules#EU261-ART7-CONN"
+          ],
+          "open_questions": [
+            "Unverified inbound aircraft tail history, MEL mechanical logs, and crew duty timers"
+          ],
+          "active_verdict_draft": "Preliminary weather check complete; tail-level causation still unproven",
+          "capsule_tokens": 134,
+          "raw_cumulative_tokens": 2222
+        },
+        {
+          "step_index": 3,
+          "step_name": "Devil's Advocate Airline Counsel Critic",
+          "world_version": 7,
+          "verified_citations": [
+            "zetaris_ops.flight_disruptions#CLM-9088",
+            "zetaris_rest.faa_metar_atc#METAR-KJFK-1019",
+            "zetaris_policy.passenger_rights_rules#EU261-ART7-CONN"
+          ],
+          "open_questions": [
+            "Execute tail & crew log audit on G-XWBA"
+          ],
+          "active_verdict_draft": "BLOCKED BY CRITIC: Awaiting Round 2 aircraft_crew_logs proof",
+          "capsule_tokens": 119,
+          "raw_cumulative_tokens": 3633
+        },
+        {
+          "step_index": 4,
+          "step_name": "Telemetry Forensics Agent (Round 2 Tail & Crew SQL)",
+          "world_version": 10,
+          "verified_citations": [
+            "zetaris_ops.flight_disruptions#CLM-9088",
+            "zetaris_rest.faa_metar_atc#METAR-KJFK-1019",
+            "zetaris_policy.passenger_rights_rules#EU261-ART7-CONN",
+            "zetaris_maint.aircraft_crew_logs#OPS-CAT-19"
+          ],
+          "open_questions": [
+            "Compute exact counterfactual flip boundaries and confidence calibration"
+          ],
+          "active_verdict_draft": "OVERTURNED_PAY_FULL ($715)",
+          "capsule_tokens": 131,
+          "raw_cumulative_tokens": 5243
+        },
+        {
+          "step_index": 5,
+          "step_name": "Counterfactual & Threshold Boundary Engine",
+          "world_version": 11,
+          "verified_citations": [
+            "zetaris_ops.flight_disruptions#CLM-9088",
+            "zetaris_rest.faa_metar_atc#METAR-KJFK-1019",
+            "zetaris_policy.passenger_rights_rules#EU261-ART7-CONN",
+            "zetaris_maint.aircraft_crew_logs#OPS-CAT-19"
+          ],
+          "open_questions": [],
+          "active_verdict_draft": "OVERTURNED: PAY $715 ($650 EU261/UK261 + $65 Meal Care)",
+          "capsule_tokens": 119,
+          "raw_cumulative_tokens": 7041
+        },
+        {
+          "step_index": 6,
+          "step_name": "Explainable Legal Brief & Claim Packet Agent",
+          "world_version": 11,
+          "verified_citations": [
+            "zetaris_ops.flight_disruptions#CLM-9088",
+            "zetaris_rest.faa_metar_atc#METAR-KJFK-1019",
+            "zetaris_policy.passenger_rights_rules#EU261-ART7-CONN",
+            "zetaris_maint.aircraft_crew_logs#OPS-CAT-19",
+            "HMEM-PREC-304"
+          ],
+          "open_questions": [],
+          "active_verdict_draft": "OVERTURNED: PAY $715 ($650 EU261/UK261 + $65 Meal Care)",
+          "capsule_tokens": 124,
+          "raw_cumulative_tokens": 8961
+        }
+      ]
+    },
+    "h_mem": {
+      "recalled_before_step_1": [
+        {
+          "memory_id": "HMEM-EP-102",
+          "carrier": "British Airways",
+          "code": "ATC-14",
+          "summary": "Transatlantic missed-connection denials citing ATC-14 frequently bundle minor 10-15m ocean-track spacing with 35-50m controllable gate catering or baggage holds.",
+          "tags": [
+            "BA",
+            "ATC-14",
+            "KJFK",
+            "connection",
+            "catering",
+            "EU261"
+          ],
+          "tier": "EPISODIC",
+          "relevance_score": 25
+        },
+        {
+          "memory_id": "HMEM-PREC-303",
+          "case_ref": "CLM-9132",
+          "carrier": "Lufthansa",
+          "verdict": "ABSTAIN_NEEDS_PASSENGER_EVIDENCE",
+          "rule_applied": "EU261-HENNING-DOOR",
+          "summary": "SurgeWhy proved 108 minutes of your delay was a controllable emergency-light bus repair (MNT-4482), defeating Lufthansa's de-icing excuse! However, SurgeWhy refuses to guess on your payout yet: under EU law (Germanwings v. Henning), the 180-minute cliff for \u20ac300 ($325) is measured at the exact minute the cabin door opens. Because wheel-stop was +177m ($0) and jetbridge dock was +184m ($325) - a 7-minute sensor gap right across the 180m line - one timestamped arrival screenshot flips this claim to a 96%-confident $325 win.",
+          "tags": [
+            "LH",
+            "WX-DEICE",
+            "EU261",
+            "MEL-33-12"
+          ],
+          "tier": "PRECEDENT",
+          "relevance_score": 8
+        },
+        {
+          "memory_id": "HMEM-PREC-304",
+          "case_ref": "CLM-9041",
+          "carrier": "United Airlines",
+          "verdict": "OVERTURNED_PAY_FULL",
+          "rule_applied": "UK261-ART7-LH",
+          "summary": "United's 'Extraordinary Hub Weather' denial (Code WX-88) is disproved by three independent records: NOAA METAR shows 10-mile clear skies at SFO with 14 of 14 neighboring flights departing on time, inbound aircraft N784UA landed 3 minutes early from Denver, and maintenance log MNT-4410 proves the 265-minute delay was caused by a 148-minute brake temperature sensor replacement (MEL-32-41) that triggered a 117-minute FAA Part 117 pilot duty-limit timeout.",
+          "tags": [
+            "UA",
+            "WX-88",
+            "UK261",
+            "MEL-32-41"
+          ],
+          "tier": "PRECEDENT",
+          "relevance_score": 8
+        }
+      ],
+      "committed_after_step_6": {
+        "memory_id": "HMEM-PREC-304",
+        "case_ref": "CLM-9088",
+        "carrier": "British Airways",
+        "verdict": "OVERTURNED_PAY_FULL",
+        "rule_applied": "EU261-ART7-CONN",
+        "summary": "British Airways blamed JFK Air Traffic Control (Code ATC-14) for missing your Heathrow->Paris connection, but FAA logs show ATC delayed departure by only 14 minutes out of your 77-minute connection buffer. Gate log OPS-CAT-19 reveals BA held the plane 41 minutes for late catering carts and gate staffing; without BA's 41-minute catering delay, you would have landed with 63 minutes to spare (18 minutes above the 45-minute connection minimum) and made your Paris flight.",
+        "tags": [
+          "BA",
+          "ATC-14",
+          "EU261_UK261",
+          "OPS-CAT-19"
+        ]
+      }
+    }
+  },
+  "zetaris_queries": [
+    {
+      "query_id": "8372d04a-370c-4fc0-81f5-5760ffb8193b",
+      "request_id": "abafff46-cc6b-4006-906c-df2f6f175654",
+      "sql": "SELECT * FROM zetaris_ops.flight_disruptions WHERE claim_id = 'CLM-9088'",
+      "source_tables_touched": [
+        "zetaris_ops.flight_disruptions"
+      ],
+      "row_count": 1,
+      "latency_ms": 4.22,
+      "mode": "zetaris-sample-federation",
+      "rows": [
+        {
+          "claim_id": "CLM-9088",
+          "flight_number": "BA-112",
+          "carrier_name": "British Airways",
+          "route": "JFK -> LHR -> CDG",
+          "distance_km": 5830,
+          "jurisdiction": "EU261_UK261",
+          "scheduled_dep_utc": "2026-10-19T18:10:00Z",
+          "actual_arr_delay_min": 248,
+          "door_open_uncertainty_min": 0,
+          "airline_claimed_code": "ATC-14",
+          "airline_claimed_reason": "Air Traffic Control Sequencing Hold at JFK",
+          "airline_initial_payout_usd": 0,
+          "care_receipts_usd": 65,
+          "fare_surge_charged_usd": 0,
+          "downgrade_fare_paid_usd": 0,
+          "extra_bag_fee_usd": 0,
+          "tail_number": "G-XWBA",
+          "dep_airport": "KJFK",
+          "arr_airport": "LFPG",
+          "connection_buffer_min": 77
+        }
+      ]
+    },
+    {
+      "query_id": "43925d32-04b0-4da4-b552-d4f369cc682f",
+      "request_id": "ad8bc252-57bd-4979-92fe-0ea3d1308b46",
+      "sql": "SELECT * FROM zetaris_rest.faa_metar_atc WHERE claim_id = 'CLM-9088'",
+      "source_tables_touched": [
+        "zetaris_rest.faa_metar_atc"
+      ],
+      "row_count": 1,
+      "latency_ms": 4.21,
+      "mode": "zetaris-sample-federation",
+      "rows": [
+        {
+          "metar_id": "METAR-KJFK-1019",
+          "claim_id": "CLM-9088",
+          "airport_icao": "KJFK",
+          "observation_window_utc": "2026-10-19T17:00Z-20:00Z",
+          "visibility_sm": 9.0,
+          "wind_speed_kt": 14,
+          "crosswind_limit_kt": 35,
+          "weather_phenomena": "FEW045 (Light Scattered Clouds)",
+          "faa_ground_stop_active": 0,
+          "atc_spacing_delay_min": 14,
+          "peer_concourse_departures_total": 18,
+          "peer_concourse_departures_ontime": 16,
+          "atc_bulletin_note": "Minor 14-minute transatlantic ocean-track spacing advisory (ATC-JFK-04); no ground stop."
+        }
+      ]
+    },
+    {
+      "query_id": "c6a955aa-9c55-472c-95d8-755d731841ef",
+      "request_id": "fb61c55e-1ab2-4b9c-8411-2592c4f98d60",
+      "sql": "SELECT * FROM zetaris_policy.passenger_rights_rules WHERE jurisdiction = 'EU261_UK261'",
+      "source_tables_touched": [
+        "zetaris_policy.passenger_rights_rules"
+      ],
+      "row_count": 1,
+      "latency_ms": 4.21,
+      "mode": "zetaris-sample-federation",
+      "rows": [
+        {
+          "rule_id": "EU261-ART7-CONN",
+          "jurisdiction": "EU261_UK261",
+          "applies_to_category": "MISSED_CONNECTION",
+          "min_distance_km": 3500,
+          "min_arrival_delay_min": 180,
+          "full_payout_delay_min": 240,
+          "statutory_cash_usd": 650,
+          "half_tier_cash_usd": 325,
+          "duty_of_care_covered": 1,
+          "fare_surge_cap_applies": 1,
+          "downgrade_refund_pct": 75,
+          "legal_citation": "EU261 Art. 7 & Folkerts (C-11/11): Final destination arrival delay >=240m caused by controllable feeder delay triggers \u20ac600 ($650) plus Art. 9 meal care."
+        }
+      ]
+    },
+    {
+      "query_id": "a78fba41-edff-4e3f-939d-cd98730dcc72",
+      "request_id": "f06ea2d0-ca51-486c-ac23-5b7a68e1a6f4",
+      "sql": "SELECT * FROM zetaris_maint.aircraft_crew_logs WHERE claim_id = 'CLM-9088'",
+      "source_tables_touched": [
+        "zetaris_maint.aircraft_crew_logs"
+      ],
+      "row_count": 1,
+      "latency_ms": 4.21,
+      "mode": "zetaris-sample-federation",
+      "rows": [
+        {
+          "log_id": "OPS-CAT-19",
+          "claim_id": "CLM-9088",
+          "tail_number": "G-XWBA",
+          "inbound_flight_status": "Landed on time from EGLL",
+          "primary_event_code": "OPS-CAT-19",
+          "primary_event_category": "CONTROLLABLE_OPERATIONS",
+          "controllable_minutes": 41,
+          "extraordinary_minutes": 14,
+          "crew_timeout_minutes": 0,
+          "log_summary": "Gate doors held open 41 minutes due to late premium-cabin catering truck upload and short-staffed boarding podium; ATC spacing added only 14 minutes."
+        }
+      ]
+    },
+    {
+      "query_id": "49ce2c4b-f5ff-4ca5-b5d8-d06867de20ad",
+      "request_id": "b1ab9aad-59a5-476d-b2db-8616adeafb70",
+      "sql": "SELECT f.claim_id, f.flight_number, f.actual_arr_delay_min, f.door_open_uncertainty_min, w.faa_ground_stop_active, w.atc_spacing_delay_min, m.primary_event_code, m.controllable_minutes, m.crew_timeout_minutes FROM zetaris_ops.flight_disruptions f JOIN zetaris_rest.faa_metar_atc w ON f.claim_id = w.claim_id JOIN zetaris_maint.aircraft_crew_logs m ON f.claim_id = m.claim_id WHERE f.claim_id = 'CLM-9088'",
+      "source_tables_touched": [
+        "zetaris_ops.flight_disruptions",
+        "zetaris_rest.faa_metar_atc",
+        "zetaris_maint.aircraft_crew_logs"
+      ],
+      "row_count": 1,
+      "latency_ms": 4.23,
+      "mode": "zetaris-sample-federation",
+      "rows": [
+        {
+          "claim_id": "CLM-9088",
+          "flight_number": "BA-112",
+          "actual_arr_delay_min": 248,
+          "door_open_uncertainty_min": 0,
+          "faa_ground_stop_active": 0,
+          "atc_spacing_delay_min": 14,
+          "primary_event_code": "OPS-CAT-19",
+          "controllable_minutes": 41,
+          "crew_timeout_minutes": 0
+        }
+      ]
+    }
+  ],
+  "nightshift_receipts": [
+    {
+      "receipt_id": "NS-RCPT-01-FA236D75",
+      "step_number": 1,
+      "step_name": "Intake & Statutory Scope Agent",
+      "lane": "Lane 1 (Fast Worker)",
+      "requested_model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "model_handled_by": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "provider": "meterless-nightshift (sample-verified)",
+      "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+      "latency_ms": 225.0,
+      "prompt_tokens": 191,
+      "completion_tokens": 48
+    },
+    {
+      "receipt_id": "NS-RCPT-02-C7997275",
+      "step_number": 2,
+      "step_name": "Telemetry Forensics Agent (Round 1 SQL)",
+      "lane": "Lane 1 (Fast Worker)",
+      "requested_model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "model_handled_by": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "provider": "meterless-nightshift (sample-verified)",
+      "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+      "latency_ms": 223.0,
+      "prompt_tokens": 433,
+      "completion_tokens": 59
+    },
+    {
+      "receipt_id": "NS-RCPT-03-F3807398",
+      "step_number": 3,
+      "step_name": "Devil's Advocate Airline Counsel Critic",
+      "lane": "Lane 2 (Deep Worker)",
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "model_handled_by": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "provider": "meterless-nightshift (sample-verified)",
+      "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+      "latency_ms": 445.0,
+      "prompt_tokens": 343,
+      "completion_tokens": 80
+    },
+    {
+      "receipt_id": "NS-RCPT-04-A6B2EC73",
+      "step_number": 4,
+      "step_name": "Telemetry Forensics Agent (Round 2 Tail & Crew SQL)",
+      "lane": "Lane 1 (Fast Worker)",
+      "requested_model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "model_handled_by": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "provider": "meterless-nightshift (sample-verified)",
+      "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+      "latency_ms": 229.0,
+      "prompt_tokens": 274,
+      "completion_tokens": 87
+    },
+    {
+      "receipt_id": "NS-RCPT-05-F5A2B483",
+      "step_number": 5,
+      "step_name": "Counterfactual & Threshold Boundary Engine",
+      "lane": "Lane 2 (Deep Worker)",
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "model_handled_by": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "provider": "meterless-nightshift (sample-verified)",
+      "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+      "latency_ms": 444.0,
+      "prompt_tokens": 1175,
+      "completion_tokens": 43
+    },
+    {
+      "receipt_id": "NS-RCPT-06-69FF3CE6",
+      "step_number": 6,
+      "step_name": "Explainable Legal Brief & Claim Packet Agent",
+      "lane": "Lane 2 (Deep Worker)",
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "model_handled_by": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "provider": "meterless-nightshift (sample-verified)",
+      "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+      "latency_ms": 434.0,
+      "prompt_tokens": 278,
+      "completion_tokens": 122
+    }
+  ],
+  "steps": [
+    {
+      "step_number": 1,
+      "agent_name": "Intake & Statutory Scope Agent",
+      "role_badge": "SCOUT INTENT + H-MEM",
+      "summary": "Classified CLM-9088 (BA-112) as MISSED_CONNECTION_BUT_FOR (ambiguity risk 26/100, abstention_watch=False). Recalled 3 H-MEM precedents and delegated Round 1 SQL across 3 Zetaris tables.",
+      "sql_queries": [],
+      "world_version": 1,
+      "markov_capsule": {
+        "step_index": 1,
+        "step_name": "Intake & Statutory Scope Agent",
+        "world_version": 1,
+        "verified_citations": [
+          "HMEM-EP-102",
+          "HMEM-PREC-303",
+          "HMEM-PREC-304"
+        ],
+        "open_questions": [
+          "Verify carrier claim code against live METAR and statutory payout rules"
+        ],
+        "active_verdict_draft": "Pending telemetry verification for MISSED_CONNECTION_BUT_FOR",
+        "capsule_tokens": 102,
+        "raw_cumulative_tokens": 891
+      },
+      "model_receipt": {
+        "receipt_id": "NS-RCPT-01-FA236D75",
+        "step_number": 1,
+        "step_name": "Intake & Statutory Scope Agent",
+        "lane": "Lane 1 (Fast Worker)",
+        "requested_model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "model_handled_by": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "provider": "meterless-nightshift (sample-verified)",
+        "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+        "latency_ms": 225.0,
+        "prompt_tokens": 191,
+        "completion_tokens": 48
+      }
+    },
+    {
+      "step_number": 2,
+      "agent_name": "Telemetry Forensics Agent (Round 1)",
+      "role_badge": "ZETARIS SQL DISCOVERY",
+      "summary": "Queried flight_disruptions, faa_metar_atc, and passenger_rights_rules via Zetaris. Observed FEW045 (Light Scattered Clouds) at KJFK with 16/18 peer flights on time. Drafting preliminary finding from external weather telemetry.",
+      "sql_queries": [
+        {
+          "query_id": "8372d04a-370c-4fc0-81f5-5760ffb8193b",
+          "request_id": "abafff46-cc6b-4006-906c-df2f6f175654",
+          "sql": "SELECT * FROM zetaris_ops.flight_disruptions WHERE claim_id = 'CLM-9088'",
+          "source_tables_touched": [
+            "zetaris_ops.flight_disruptions"
+          ],
+          "row_count": 1,
+          "latency_ms": 4.22,
+          "mode": "zetaris-sample-federation",
+          "rows": [
+            {
+              "claim_id": "CLM-9088",
+              "flight_number": "BA-112",
+              "carrier_name": "British Airways",
+              "route": "JFK -> LHR -> CDG",
+              "distance_km": 5830,
+              "jurisdiction": "EU261_UK261",
+              "scheduled_dep_utc": "2026-10-19T18:10:00Z",
+              "actual_arr_delay_min": 248,
+              "door_open_uncertainty_min": 0,
+              "airline_claimed_code": "ATC-14",
+              "airline_claimed_reason": "Air Traffic Control Sequencing Hold at JFK",
+              "airline_initial_payout_usd": 0,
+              "care_receipts_usd": 65,
+              "fare_surge_charged_usd": 0,
+              "downgrade_fare_paid_usd": 0,
+              "extra_bag_fee_usd": 0,
+              "tail_number": "G-XWBA",
+              "dep_airport": "KJFK",
+              "arr_airport": "LFPG",
+              "connection_buffer_min": 77
+            }
+          ]
+        },
+        {
+          "query_id": "43925d32-04b0-4da4-b552-d4f369cc682f",
+          "request_id": "ad8bc252-57bd-4979-92fe-0ea3d1308b46",
+          "sql": "SELECT * FROM zetaris_rest.faa_metar_atc WHERE claim_id = 'CLM-9088'",
+          "source_tables_touched": [
+            "zetaris_rest.faa_metar_atc"
+          ],
+          "row_count": 1,
+          "latency_ms": 4.21,
+          "mode": "zetaris-sample-federation",
+          "rows": [
+            {
+              "metar_id": "METAR-KJFK-1019",
+              "claim_id": "CLM-9088",
+              "airport_icao": "KJFK",
+              "observation_window_utc": "2026-10-19T17:00Z-20:00Z",
+              "visibility_sm": 9.0,
+              "wind_speed_kt": 14,
+              "crosswind_limit_kt": 35,
+              "weather_phenomena": "FEW045 (Light Scattered Clouds)",
+              "faa_ground_stop_active": 0,
+              "atc_spacing_delay_min": 14,
+              "peer_concourse_departures_total": 18,
+              "peer_concourse_departures_ontime": 16,
+              "atc_bulletin_note": "Minor 14-minute transatlantic ocean-track spacing advisory (ATC-JFK-04); no ground stop."
+            }
+          ]
+        },
+        {
+          "query_id": "c6a955aa-9c55-472c-95d8-755d731841ef",
+          "request_id": "fb61c55e-1ab2-4b9c-8411-2592c4f98d60",
+          "sql": "SELECT * FROM zetaris_policy.passenger_rights_rules WHERE jurisdiction = 'EU261_UK261'",
+          "source_tables_touched": [
+            "zetaris_policy.passenger_rights_rules"
+          ],
+          "row_count": 1,
+          "latency_ms": 4.21,
+          "mode": "zetaris-sample-federation",
+          "rows": [
+            {
+              "rule_id": "EU261-ART7-CONN",
+              "jurisdiction": "EU261_UK261",
+              "applies_to_category": "MISSED_CONNECTION",
+              "min_distance_km": 3500,
+              "min_arrival_delay_min": 180,
+              "full_payout_delay_min": 240,
+              "statutory_cash_usd": 650,
+              "half_tier_cash_usd": 325,
+              "duty_of_care_covered": 1,
+              "fare_surge_cap_applies": 1,
+              "downgrade_refund_pct": 75,
+              "legal_citation": "EU261 Art. 7 & Folkerts (C-11/11): Final destination arrival delay >=240m caused by controllable feeder delay triggers \u20ac600 ($650) plus Art. 9 meal care."
+            }
+          ]
+        }
+      ],
+      "world_version": 5,
+      "markov_capsule": {
+        "step_index": 2,
+        "step_name": "Telemetry Forensics Agent (Round 1 SQL)",
+        "world_version": 5,
+        "verified_citations": [
+          "zetaris_ops.flight_disruptions#CLM-9088",
+          "zetaris_rest.faa_metar_atc#METAR-KJFK-1019",
+          "zetaris_policy.passenger_rights_rules#EU261-ART7-CONN"
+        ],
+        "open_questions": [
+          "Unverified inbound aircraft tail history, MEL mechanical logs, and crew duty timers"
+        ],
+        "active_verdict_draft": "Preliminary weather check complete; tail-level causation still unproven",
+        "capsule_tokens": 134,
+        "raw_cumulative_tokens": 2222
+      },
+      "model_receipt": {
+        "receipt_id": "NS-RCPT-02-C7997275",
+        "step_number": 2,
+        "step_name": "Telemetry Forensics Agent (Round 1 SQL)",
+        "lane": "Lane 1 (Fast Worker)",
+        "requested_model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "model_handled_by": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "provider": "meterless-nightshift (sample-verified)",
+        "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+        "latency_ms": 223.0,
+        "prompt_tokens": 433,
+        "completion_tokens": 59
+      }
+    },
+    {
+      "step_number": 3,
+      "agent_name": "Devil's Advocate Airline Counsel Critic",
+      "role_badge": "ADVERSARIAL REJECTION",
+      "summary": "PROOF_INSUFFICIENT_GATE_HOLD_CAUSE: Proving JFK ATC spacing was only 14m does not explain the remaining delay minutes on BA-112. What if a security alert or medical emergency held the gate? Mandatory Round 2 SQL: query zetaris_maint.aircraft_crew_logs for tail G-XWBA to establish strict but-for causation.",
+      "sql_queries": [],
+      "world_version": 7,
+      "markov_capsule": {
+        "step_index": 3,
+        "step_name": "Devil's Advocate Airline Counsel Critic",
+        "world_version": 7,
+        "verified_citations": [
+          "zetaris_ops.flight_disruptions#CLM-9088",
+          "zetaris_rest.faa_metar_atc#METAR-KJFK-1019",
+          "zetaris_policy.passenger_rights_rules#EU261-ART7-CONN"
+        ],
+        "open_questions": [
+          "Execute tail & crew log audit on G-XWBA"
+        ],
+        "active_verdict_draft": "BLOCKED BY CRITIC: Awaiting Round 2 aircraft_crew_logs proof",
+        "capsule_tokens": 119,
+        "raw_cumulative_tokens": 3633
+      },
+      "model_receipt": {
+        "receipt_id": "NS-RCPT-03-F3807398",
+        "step_number": 3,
+        "step_name": "Devil's Advocate Airline Counsel Critic",
+        "lane": "Lane 2 (Deep Worker)",
+        "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "model_handled_by": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "provider": "meterless-nightshift (sample-verified)",
+        "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+        "latency_ms": 445.0,
+        "prompt_tokens": 343,
+        "completion_tokens": 80
+      }
+    },
+    {
+      "step_number": 4,
+      "agent_name": "Telemetry Forensics Agent (Round 2)",
+      "role_badge": "TARGETED RE-QUERY",
+      "summary": "Executed Round 2 Zetaris SQL on aircraft_crew_logs#OPS-CAT-19 and federated 3-table join. Confirmed CONTROLLABLE_OPERATIONS (Gate doors held open 41 minutes due to late premium-cabin catering truck upload and short-staffed boarding podium; ATC spacing added only 14 minutes.) and updated 2 causal hypotheses in CausalWorldModel v10.",
+      "sql_queries": [
+        {
+          "query_id": "a78fba41-edff-4e3f-939d-cd98730dcc72",
+          "request_id": "f06ea2d0-ca51-486c-ac23-5b7a68e1a6f4",
+          "sql": "SELECT * FROM zetaris_maint.aircraft_crew_logs WHERE claim_id = 'CLM-9088'",
+          "source_tables_touched": [
+            "zetaris_maint.aircraft_crew_logs"
+          ],
+          "row_count": 1,
+          "latency_ms": 4.21,
+          "mode": "zetaris-sample-federation",
+          "rows": [
+            {
+              "log_id": "OPS-CAT-19",
+              "claim_id": "CLM-9088",
+              "tail_number": "G-XWBA",
+              "inbound_flight_status": "Landed on time from EGLL",
+              "primary_event_code": "OPS-CAT-19",
+              "primary_event_category": "CONTROLLABLE_OPERATIONS",
+              "controllable_minutes": 41,
+              "extraordinary_minutes": 14,
+              "crew_timeout_minutes": 0,
+              "log_summary": "Gate doors held open 41 minutes due to late premium-cabin catering truck upload and short-staffed boarding podium; ATC spacing added only 14 minutes."
+            }
+          ]
+        },
+        {
+          "query_id": "49ce2c4b-f5ff-4ca5-b5d8-d06867de20ad",
+          "request_id": "b1ab9aad-59a5-476d-b2db-8616adeafb70",
+          "sql": "SELECT f.claim_id, f.flight_number, f.actual_arr_delay_min, f.door_open_uncertainty_min, w.faa_ground_stop_active, w.atc_spacing_delay_min, m.primary_event_code, m.controllable_minutes, m.crew_timeout_minutes FROM zetaris_ops.flight_disruptions f JOIN zetaris_rest.faa_metar_atc w ON f.claim_id = w.claim_id JOIN zetaris_maint.aircraft_crew_logs m ON f.claim_id = m.claim_id WHERE f.claim_id = 'CLM-9088'",
+          "source_tables_touched": [
+            "zetaris_ops.flight_disruptions",
+            "zetaris_rest.faa_metar_atc",
+            "zetaris_maint.aircraft_crew_logs"
+          ],
+          "row_count": 1,
+          "latency_ms": 4.23,
+          "mode": "zetaris-sample-federation",
+          "rows": [
+            {
+              "claim_id": "CLM-9088",
+              "flight_number": "BA-112",
+              "actual_arr_delay_min": 248,
+              "door_open_uncertainty_min": 0,
+              "faa_ground_stop_active": 0,
+              "atc_spacing_delay_min": 14,
+              "primary_event_code": "OPS-CAT-19",
+              "controllable_minutes": 41,
+              "crew_timeout_minutes": 0
+            }
+          ]
+        }
+      ],
+      "world_version": 10,
+      "markov_capsule": {
+        "step_index": 4,
+        "step_name": "Telemetry Forensics Agent (Round 2 Tail & Crew SQL)",
+        "world_version": 10,
+        "verified_citations": [
+          "zetaris_ops.flight_disruptions#CLM-9088",
+          "zetaris_rest.faa_metar_atc#METAR-KJFK-1019",
+          "zetaris_policy.passenger_rights_rules#EU261-ART7-CONN",
+          "zetaris_maint.aircraft_crew_logs#OPS-CAT-19"
+        ],
+        "open_questions": [
+          "Compute exact counterfactual flip boundaries and confidence calibration"
+        ],
+        "active_verdict_draft": "OVERTURNED_PAY_FULL ($715)",
+        "capsule_tokens": 131,
+        "raw_cumulative_tokens": 5243
+      },
+      "model_receipt": {
+        "receipt_id": "NS-RCPT-04-A6B2EC73",
+        "step_number": 4,
+        "step_name": "Telemetry Forensics Agent (Round 2 Tail & Crew SQL)",
+        "lane": "Lane 1 (Fast Worker)",
+        "requested_model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "model_handled_by": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "provider": "meterless-nightshift (sample-verified)",
+        "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+        "latency_ms": 229.0,
+        "prompt_tokens": 274,
+        "completion_tokens": 87
+      }
+    },
+    {
+      "step_number": 5,
+      "agent_name": "Counterfactual & Threshold Boundary Engine",
+      "role_badge": "COUNTERFACTUAL FLIP MATH",
+      "summary": "Computed 3 counterfactual flip boundaries. Calibrated confidence=95% (abstention_triggered=False). Verdict: OVERTURNED: PAY $715 ($650 EU261/UK261 + $65 Meal Care).",
+      "sql_queries": [],
+      "world_version": 11,
+      "markov_capsule": {
+        "step_index": 5,
+        "step_name": "Counterfactual & Threshold Boundary Engine",
+        "world_version": 11,
+        "verified_citations": [
+          "zetaris_ops.flight_disruptions#CLM-9088",
+          "zetaris_rest.faa_metar_atc#METAR-KJFK-1019",
+          "zetaris_policy.passenger_rights_rules#EU261-ART7-CONN",
+          "zetaris_maint.aircraft_crew_logs#OPS-CAT-19"
+        ],
+        "open_questions": [],
+        "active_verdict_draft": "OVERTURNED: PAY $715 ($650 EU261/UK261 + $65 Meal Care)",
+        "capsule_tokens": 119,
+        "raw_cumulative_tokens": 7041
+      },
+      "model_receipt": {
+        "receipt_id": "NS-RCPT-05-F5A2B483",
+        "step_number": 5,
+        "step_name": "Counterfactual & Threshold Boundary Engine",
+        "lane": "Lane 2 (Deep Worker)",
+        "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "model_handled_by": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "provider": "meterless-nightshift (sample-verified)",
+        "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+        "latency_ms": 444.0,
+        "prompt_tokens": 1175,
+        "completion_tokens": 43
+      }
+    },
+    {
+      "step_number": 6,
+      "agent_name": "Explainable Legal Brief & Claim Packet Agent",
+      "role_badge": "CITED PROOF PACKET + H-MEM",
+      "summary": "Generated plain-English causal proof chain, ruled-out defense ledger, and passenger demand brief; persisted precedent to H-MEM.",
+      "sql_queries": [],
+      "world_version": 11,
+      "markov_capsule": {
+        "step_index": 6,
+        "step_name": "Explainable Legal Brief & Claim Packet Agent",
+        "world_version": 11,
+        "verified_citations": [
+          "zetaris_ops.flight_disruptions#CLM-9088",
+          "zetaris_rest.faa_metar_atc#METAR-KJFK-1019",
+          "zetaris_policy.passenger_rights_rules#EU261-ART7-CONN",
+          "zetaris_maint.aircraft_crew_logs#OPS-CAT-19",
+          "HMEM-PREC-304"
+        ],
+        "open_questions": [],
+        "active_verdict_draft": "OVERTURNED: PAY $715 ($650 EU261/UK261 + $65 Meal Care)",
+        "capsule_tokens": 124,
+        "raw_cumulative_tokens": 8961
+      },
+      "model_receipt": {
+        "receipt_id": "NS-RCPT-06-69FF3CE6",
+        "step_number": 6,
+        "step_name": "Explainable Legal Brief & Claim Packet Agent",
+        "lane": "Lane 2 (Deep Worker)",
+        "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "model_handled_by": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "provider": "meterless-nightshift (sample-verified)",
+        "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+        "latency_ms": 434.0,
+        "prompt_tokens": 278,
+        "completion_tokens": 122
+      }
+    }
+  ]
+}

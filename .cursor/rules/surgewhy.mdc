@@ -1,0 +1,26 @@
+---
+description: SurgeWhy Cursor Agent Rules for Track 2 Explainability, Zetaris SQL, Meterless Engines, and Nightshift Nemotron
+globs: ["agent/**/*.py", "scripts/**/*.py", "scripts/**/*.sql", "tests/**/*.py", "smoke_test.py"]
+alwaysApply: true
+---
+
+# SurgeWhy Cursor Agent Rules (Open Agent Hackathon 2026 - Track 2)
+
+Always read `AGENTS.md` before changing any Data, Build, or Power code.
+
+## 1. Track 2 Explainability Contract
+- Every verdict must output: (a) a cited Causal Proof Chain (`[schema.table#id]`), (b) a Ruled-Out Hypotheses Ledger, (c) quantitative Counterfactual Flip Deltas, and (d) a calibrated confidence score that triggers `NEEDS_EVIDENCE` below `0.75`.
+- Never use em-dashes in UI copy, prompts, markdown docs, or slide decks; use hyphens or colons.
+
+## 2. Layer 01 (DATA - Zetaris)
+- Run `python3 scripts/preflight.py` before modifying Zetaris schemas.
+- Send strictly **one SQL statement per REST call** to `POST {ZETARIS_REST_URL}/sql-editor/sqls/run` with `Authorization: Bearer`, `X-Org-ID: 1`, and a fresh UUID4 `X-Request-ID`.
+- Never print secrets from `.env`.
+
+## 3. Layer 02 (BUILD - Cursor & Meterless Engines)
+- Keep all four Meterless Engines (`scout_intent.py`, `world_model.py`, `markovian.py`, `h_mem.py`) active in the adjudication loop and covered by `python3 -m unittest discover -s tests -v`.
+- Keep `metadata.json` and `README.md` synced with Cursor and Meterless Engine usage.
+
+## 4. Layer 03 (POWER - Meterless Nightshift & NVIDIA Nemotron)
+- Route all model calls through Meterless Nightshift (`http://127.0.0.1:8088/v1`) with `meterless-app: surgewhy-agent` and `meterless-scope: user`.
+- Pin `nvidia/nemotron-3.5-lightning-30b-a3b` (Lane 1 Fast) and `nvidia/nemotron-3.5-super-vl-120b-a12b` (Lane 2 Deep) and log a `ModelReceipt` on every step.

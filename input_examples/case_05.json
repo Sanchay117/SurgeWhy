@@ -1,0 +1,10 @@
+{
+  "case_id": "CASE-05",
+  "claim_id": "CLM-9175",
+  "flight_number": "AA-204",
+  "passenger_name": "Marcus Vance",
+  "route": "DFW -> ORD",
+  "carrier_denial_notice": "CLAIM DENIED ($0 PAYOUT): Aircraft equipment swap required by regional airspace congestion; passenger transported to destination in Economy (Code ATC-SWAP).",
+  "passenger_statement": "Skies were clear in Dallas and Chicago. They swapped our widebody 787 for a tiny narrowbody, bumped me from my $1,280 Business Class seat into middle Economy, and still charged me $180 for my bags!",
+  "claimed_rule_Hint": "DOT-DOWNGRADE-75"
+}

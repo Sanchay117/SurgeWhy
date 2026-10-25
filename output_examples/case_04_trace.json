@@ -1,0 +1,1031 @@
+{
+  "case_id": "CASE-04",
+  "claim_id": "CLM-9132",
+  "passenger_name": "Jonas Weber",
+  "flight_number": "LH-455",
+  "carrier_name": "Lufthansa",
+  "route": "FRA -> SFO",
+  "jurisdiction": "EU261",
+  "carrier_denial_notice": "CLAIM DENIED ($0 PAYOUT): Departure delayed by Frankfurt Airport mandatory de-icing queue, and aircraft touched down less than 3 hours late (Code WX-DEICE).",
+  "passenger_statement": "We waited almost two hours at the gate in Frankfurt fixing cabin emergency lights before we ever Taxied to de-icing, and when we landed in SFO we waited several minutes for the jetbridge door to open around 3 hours late. Am I owed \u20ac300 ($325)?",
+  "verdict_code": "ABSTAIN_NEEDS_PASSENGER_EVIDENCE",
+  "verdict_banner": "PAUSED AT 62% CONFIDENCE: 1 DOCUMENT NEEDED TO UNLOCK $325",
+  "airline_initial_payout_usd": 0,
+  "statutory_cash_owed_usd": 0,
+  "care_or_fee_recovery_usd": 0,
+  "total_owed_usd": 0,
+  "confidence_score": 0.62,
+  "abstention_triggered": true,
+  "missing_evidence_request": "Upload 1 timestamped proof of SFO cabin door-open time (e.g., phone photo EXIF in jetbridge, cellular 'Welcome to USA' SMS, or flight-attendant log) resolving the 7-minute gap between wheel-stop (+177m) and jetbridge dock (+184m).",
+  "plain_english_why": "SurgeWhy proved 108 minutes of your delay was a controllable emergency-light bus repair (MNT-4482), defeating Lufthansa's de-icing excuse! However, SurgeWhy refuses to guess on your payout yet: under EU law (Germanwings v. Henning), the 180-minute cliff for \u20ac300 ($325) is measured at the exact minute the cabin door opens. Because wheel-stop was +177m ($0) and jetbridge dock was +184m ($325) - a 7-minute sensor gap right across the 180m line - one timestamped arrival screenshot flips this claim to a 96%-confident $325 win.",
+  "causal_chain": [
+    {
+      "node": "1. Airline Claim",
+      "fact": "Denied citing Frankfurt de-icing queue & touchdown <180m (Code WX-DEICE)",
+      "citation": "zetaris_ops.flight_disruptions#CLM-9132"
+    },
+    {
+      "node": "2. De-Icing Excuse Defeated",
+      "fact": "Tail D-ABYA had 108m controllable cabin light bus repair before 76m de-icing queue",
+      "citation": "zetaris_maint.aircraft_crew_logs#MNT-4482"
+    },
+    {
+      "node": "3. Legal Cliff Identified",
+      "fact": "Henning (C-452/13) measures 180m cliff at cabin door open, NOT touchdown/wheel-stop",
+      "citation": "zetaris_policy.passenger_rights_rules#EU261-HENNING-DOOR"
+    },
+    {
+      "node": "4. Calibrated Abstention Gate",
+      "fact": "184m +/-7m spans [177m ($0) .. 184m ($325)] -> Confidence 62% < 75% gate -> Request 1 proof",
+      "citation": "zetaris_ops.flight_disruptions#CLM-9132"
+    }
+  ],
+  "ruled_out_hypotheses": [
+    {
+      "hypothesis_id": "HYP-AIRLINE-DEFENSE",
+      "title": "H1: De-Icing Queue Solely Caused Delay (Code WX-DEICE)",
+      "status": "FALSIFIED",
+      "supporting_citations": [
+        "zetaris_rest.faa_metar_atc#METAR-EDDF-1021"
+      ],
+      "refuting_citations": [
+        "zetaris_maint.aircraft_crew_logs#MNT-4482"
+      ],
+      "explanation": "108m of the delay was a controllable MEL-33-12 emergency-lighting bus reboot at the gate."
+    },
+    {
+      "hypothesis_id": "HYP-DOOR-BOUNDARY",
+      "title": "H2: Cabin Door Opened >= 180 Minutes After Scheduled Arrival",
+      "status": "AMBIGUOUS_BOUNDARY",
+      "supporting_citations": [
+        "zetaris_policy.passenger_rights_rules#EU261-HENNING-DOOR"
+      ],
+      "refuting_citations": [
+        "zetaris_ops.flight_disruptions#CLM-9132"
+      ],
+      "explanation": "ACARS wheel-stop (+177m) vs jetbridge sensor (+184m) leaves a 7-minute uncertainty window across the 180m cliff."
+    }
+  ],
+  "counterfactuals": [
+    {
+      "id": "CF-01",
+      "parameter": "Verified Cabin Door-Open Timestamp",
+      "actual_value": "177m to 184m (+/-7m uncertainty)",
+      "flip_threshold": "Confirmed >= 180 min (uncertainty = 0)",
+      "flipped_outcome": "Confidence jumps from 62% to 96% and verdict flips from ABSTAIN to OVERTURNED ($325 / \u20ac300 payout)."
+    },
+    {
+      "id": "CF-02",
+      "parameter": "Verified Cabin Door-Open Timestamp",
+      "actual_value": "177m to 184m (+/-7m uncertainty)",
+      "flip_threshold": "Confirmed <= 179 min",
+      "flipped_outcome": "Falls 1 minute short of EU261 3-hour threshold; statutory payout locks at $0."
+    }
+  ],
+  "simulator_defaults": {
+    "arrival_delay_min": 184,
+    "faa_ground_stop_active": 0,
+    "controllable_maint_min": 108,
+    "door_uncertainty_min": 7
+  },
+  "demand_letter": "EVIDENCE HOLD - CLAIM CLM-9132 / FLIGHT LH-455 (FRA->SFO)\nStatus: PAUSED AT 62% CONFIDENCE (Calibrated Abstention Gate Active).\nCausal Liability Proven: Log MNT-4482 confirms 108m controllable MEL-33-12 repair.\nAction Required From Passenger: Provide 1 timestamped record proving cabin door opened >=180m past scheduled arrival to unlock $325 (\u20ac300) demand.",
+  "engines_telemetry": {
+    "scout_intent": {
+      "intent_type": "SPLIT_CAUSE_BOUNDARY_CHECK",
+      "dispute_severity": "HIGH",
+      "ambiguity_risk_score": 74,
+      "abstention_watch": true,
+      "required_zetaris_tables": [
+        "zetaris_ops.flight_disruptions",
+        "zetaris_rest.faa_metar_atc",
+        "zetaris_policy.passenger_rights_rules",
+        "zetaris_maint.aircraft_crew_logs"
+      ],
+      "lane_plan": {
+        "step_1_intake": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "step_2_forensics_r1": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "step_3_counsel_critic": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "step_4_forensics_r2": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "step_5_counterfactual_engine": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "step_6_legal_brief": "nvidia/nemotron-3.5-super-vl-120b-a12b"
+      },
+      "rationale": "Detects split mechanical/de-icing delay near 180-minute Henning door-open cliff; activates calibrated abstention watch."
+    },
+    "world_model": {
+      "claim_id": "CLM-9132",
+      "version": 11,
+      "evidence_nodes": {
+        "EV-OPS-01": {
+          "node_id": "EV-OPS-01",
+          "source_table": "zetaris_ops.flight_disruptions",
+          "primary_key": "CLM-9132",
+          "field_summary": "LH-455 (FRA -> SFO) delayed 184m (door uncertainty +/-7m); airline cited WX-DEICE (Airport Authority Mandatory De-Icing Queue at FRA) and paid $0.",
+          "supports_side": "AIRLINE_CLAIM_BASELINE",
+          "recorded_by": "Telemetry Forensics R1",
+          "world_version": 2
+        },
+        "EV-METAR-02": {
+          "node_id": "EV-METAR-02",
+          "source_table": "zetaris_rest.faa_metar_atc",
+          "primary_key": "METAR-EDDF-1021",
+          "field_summary": "EDDF visibility 3.5 SM, wind 16kt, ground_stop=0, ATC hold=76m, peer on-time=7/22.",
+          "supports_side": "BOUNDARY_WARNING",
+          "recorded_by": "Telemetry Forensics R1",
+          "world_version": 3
+        },
+        "EV-POL-03": {
+          "node_id": "EV-POL-03",
+          "source_table": "zetaris_policy.passenger_rights_rules",
+          "primary_key": "EU261-HENNING-DOOR",
+          "field_summary": "EU261 Art. 7(2) & Germanwings v. Henning (C-452/13): Arrival time is exact cabin door-open minute; 180-239m yields 50% (\u20ac300 / $325), <=179m yields $0.",
+          "supports_side": "STATUTORY_RULE",
+          "recorded_by": "Telemetry Forensics R1",
+          "world_version": 4
+        },
+        "EV-MAINT-04": {
+          "node_id": "EV-MAINT-04",
+          "source_table": "zetaris_maint.aircraft_crew_logs",
+          "primary_key": "MNT-4482",
+          "field_summary": "Tail D-ABYA (Landed on time from RJTT): MEL-33-12 [SPLIT_MECHANICAL_AND_DEICING] - Cabin emergency-lighting bus reboot delayed pushback 108m (controllable) before entering Fraport mandatory 76m de-icing queue; wheel-stop +177m vs jetbridge +184m.",
+          "supports_side": "BOUNDARY_WARNING",
+          "recorded_by": "Telemetry Forensics R2",
+          "world_version": 8
+        }
+      },
+      "hypotheses": {
+        "HYP-AIRLINE-DEFENSE": {
+          "hypothesis_id": "HYP-AIRLINE-DEFENSE",
+          "title": "H1: De-Icing Queue Solely Caused Delay (Code WX-DEICE)",
+          "proposed_by": "Telemetry Forensics R1",
+          "status": "FALSIFIED",
+          "supporting_citations": [
+            "zetaris_rest.faa_metar_atc#METAR-EDDF-1021"
+          ],
+          "refuting_citations": [
+            "zetaris_maint.aircraft_crew_logs#MNT-4482"
+          ],
+          "explanation": "108m of the delay was a controllable MEL-33-12 emergency-lighting bus reboot at the gate."
+        },
+        "HYP-DOOR-BOUNDARY": {
+          "hypothesis_id": "HYP-DOOR-BOUNDARY",
+          "title": "H2: Cabin Door Opened >= 180 Minutes After Scheduled Arrival",
+          "proposed_by": "Telemetry Forensics R2",
+          "status": "AMBIGUOUS_BOUNDARY",
+          "supporting_citations": [
+            "zetaris_policy.passenger_rights_rules#EU261-HENNING-DOOR"
+          ],
+          "refuting_citations": [
+            "zetaris_ops.flight_disruptions#CLM-9132"
+          ],
+          "explanation": "ACARS wheel-stop (+177m) vs jetbridge sensor (+184m) leaves a 7-minute uncertainty window across the 180m cliff."
+        }
+      },
+      "critic_challenges": [
+        {
+          "challenge_id": "CRIT-CLM-9132",
+          "verdict": "REVISION_REQUIRED",
+          "objection": "PROOF_INSUFFICIENT_BOUNDARY_HAZARD: Recorded arrival delay is 184m with +/-7m door-open uncertainty right across the 180-minute Henning threshold! Mandatory Round 2 SQL: audit zetaris_maint.aircraft_crew_logs for tail D-ABYA to isolate mechanical reboot minutes from Fraport de-icing minutes before issuing any payout.",
+          "required_sql_followup": "SELECT * FROM zetaris_maint.aircraft_crew_logs WHERE claim_id = 'CLM-9132' AND tail_number = 'D-ABYA'",
+          "world_version": 7
+        }
+      ],
+      "counterfactual_deltas": [
+        {
+          "id": "CF-01",
+          "parameter": "Verified Cabin Door-Open Timestamp",
+          "actual_value": "177m to 184m (+/-7m uncertainty)",
+          "flip_threshold": "Confirmed >= 180 min (uncertainty = 0)",
+          "flipped_outcome": "Confidence jumps from 62% to 96% and verdict flips from ABSTAIN to OVERTURNED ($325 / \u20ac300 payout)."
+        },
+        {
+          "id": "CF-02",
+          "parameter": "Verified Cabin Door-Open Timestamp",
+          "actual_value": "177m to 184m (+/-7m uncertainty)",
+          "flip_threshold": "Confirmed <= 179 min",
+          "flipped_outcome": "Falls 1 minute short of EU261 3-hour threshold; statutory payout locks at $0."
+        }
+      ],
+      "history": [
+        {
+          "version": 1,
+          "agent": "system",
+          "event": "Initialized CausalWorldModel for CLM-9132"
+        },
+        {
+          "version": 2,
+          "agent": "Telemetry Forensics R1",
+          "event": "Added evidence EV-OPS-01 from zetaris_ops.flight_disruptions#CLM-9132"
+        },
+        {
+          "version": 3,
+          "agent": "Telemetry Forensics R1",
+          "event": "Added evidence EV-METAR-02 from zetaris_rest.faa_metar_atc#METAR-EDDF-1021"
+        },
+        {
+          "version": 4,
+          "agent": "Telemetry Forensics R1",
+          "event": "Added evidence EV-POL-03 from zetaris_policy.passenger_rights_rules#EU261-HENNING-DOOR"
+        },
+        {
+          "version": 5,
+          "agent": "Telemetry Forensics R1",
+          "event": "Hypothesis HYP-AIRLINE-DEFENSE -> PROPOSED"
+        },
+        {
+          "version": 6,
+          "agent": "Airline Counsel Critic",
+          "event": "Hypothesis HYP-AIRLINE-DEFENSE -> CHALLENGED_BY_COUNSEL"
+        },
+        {
+          "version": 7,
+          "agent": "Airline Counsel Critic",
+          "event": "Critic challenge CRIT-CLM-9132: REVISION_REQUIRED"
+        },
+        {
+          "version": 8,
+          "agent": "Telemetry Forensics R2",
+          "event": "Added evidence EV-MAINT-04 from zetaris_maint.aircraft_crew_logs#MNT-4482"
+        },
+        {
+          "version": 9,
+          "agent": "Telemetry Forensics R2",
+          "event": "Hypothesis HYP-AIRLINE-DEFENSE -> FALSIFIED"
+        },
+        {
+          "version": 10,
+          "agent": "Telemetry Forensics R2",
+          "event": "Hypothesis HYP-DOOR-BOUNDARY -> AMBIGUOUS_BOUNDARY"
+        },
+        {
+          "version": 11,
+          "agent": "Counterfactual Engine",
+          "event": "Recorded 2 counterfactual flip rules"
+        }
+      ]
+    },
+    "markovian": {
+      "steps_compressed": 6,
+      "naive_cumulative_tokens": 8959,
+      "markovian_total_tokens": 798,
+      "token_reduction_pct": 91.1,
+      "max_capsule_budget": 380,
+      "capsules": [
+        {
+          "step_index": 1,
+          "step_name": "Intake & Statutory Scope Agent",
+          "world_version": 1,
+          "verified_citations": [
+            "HMEM-PREC-303",
+            "HMEM-PREC-304",
+            "HMEM-SEM-203"
+          ],
+          "open_questions": [
+            "Verify carrier claim code against live METAR and statutory payout rules"
+          ],
+          "active_verdict_draft": "Pending telemetry verification for SPLIT_CAUSE_BOUNDARY_CHECK",
+          "capsule_tokens": 103,
+          "raw_cumulative_tokens": 907
+        },
+        {
+          "step_index": 2,
+          "step_name": "Telemetry Forensics Agent (Round 1 SQL)",
+          "world_version": 5,
+          "verified_citations": [
+            "zetaris_ops.flight_disruptions#CLM-9132",
+            "zetaris_rest.faa_metar_atc#METAR-EDDF-1021",
+            "zetaris_policy.passenger_rights_rules#EU261-HENNING-DOOR"
+          ],
+          "open_questions": [
+            "Unverified inbound aircraft tail history, MEL mechanical logs, and crew duty timers"
+          ],
+          "active_verdict_draft": "Preliminary weather check complete; tail-level causation still unproven",
+          "capsule_tokens": 134,
+          "raw_cumulative_tokens": 2251
+        },
+        {
+          "step_index": 3,
+          "step_name": "Devil's Advocate Airline Counsel Critic",
+          "world_version": 7,
+          "verified_citations": [
+            "zetaris_ops.flight_disruptions#CLM-9132",
+            "zetaris_rest.faa_metar_atc#METAR-EDDF-1021",
+            "zetaris_policy.passenger_rights_rules#EU261-HENNING-DOOR"
+          ],
+          "open_questions": [
+            "Execute tail & crew log audit on D-ABYA"
+          ],
+          "active_verdict_draft": "BLOCKED BY CRITIC: Awaiting Round 2 aircraft_crew_logs proof",
+          "capsule_tokens": 120,
+          "raw_cumulative_tokens": 3678
+        },
+        {
+          "step_index": 4,
+          "step_name": "Telemetry Forensics Agent (Round 2 Tail & Crew SQL)",
+          "world_version": 10,
+          "verified_citations": [
+            "zetaris_ops.flight_disruptions#CLM-9132",
+            "zetaris_rest.faa_metar_atc#METAR-EDDF-1021",
+            "zetaris_policy.passenger_rights_rules#EU261-HENNING-DOOR",
+            "zetaris_maint.aircraft_crew_logs#MNT-4482"
+          ],
+          "open_questions": [
+            "Compute exact counterfactual flip boundaries and confidence calibration"
+          ],
+          "active_verdict_draft": "ABSTAIN_NEEDS_PASSENGER_EVIDENCE ($0)",
+          "capsule_tokens": 134,
+          "raw_cumulative_tokens": 5308
+        },
+        {
+          "step_index": 5,
+          "step_name": "Counterfactual & Threshold Boundary Engine",
+          "world_version": 11,
+          "verified_citations": [
+            "zetaris_ops.flight_disruptions#CLM-9132",
+            "zetaris_rest.faa_metar_atc#METAR-EDDF-1021",
+            "zetaris_policy.passenger_rights_rules#EU261-HENNING-DOOR",
+            "zetaris_maint.aircraft_crew_logs#MNT-4482"
+          ],
+          "open_questions": [
+            "Upload 1 timestamped proof of SFO cabin door-open time (e.g., phone photo EXIF in jetbridge, cellular 'Welcome to USA' SMS, or flight-attendant log) resolving the 7-minute gap between wheel-stop (+177m) and jetbridge dock (+184m)."
+          ],
+          "active_verdict_draft": "PAUSED AT 62% CONFIDENCE: 1 DOCUMENT NEEDED TO UNLOCK $325",
+          "capsule_tokens": 182,
+          "raw_cumulative_tokens": 7087
+        },
+        {
+          "step_index": 6,
+          "step_name": "Explainable Legal Brief & Claim Packet Agent",
+          "world_version": 11,
+          "verified_citations": [
+            "zetaris_ops.flight_disruptions#CLM-9132",
+            "zetaris_rest.faa_metar_atc#METAR-EDDF-1021",
+            "zetaris_policy.passenger_rights_rules#EU261-HENNING-DOOR",
+            "zetaris_maint.aircraft_crew_logs#MNT-4482",
+            "HMEM-PREC-306"
+          ],
+          "open_questions": [],
+          "active_verdict_draft": "PAUSED AT 62% CONFIDENCE: 1 DOCUMENT NEEDED TO UNLOCK $325",
+          "capsule_tokens": 125,
+          "raw_cumulative_tokens": 8959
+        }
+      ]
+    },
+    "h_mem": {
+      "recalled_before_step_1": [
+        {
+          "memory_id": "HMEM-PREC-303",
+          "case_ref": "CLM-9132",
+          "carrier": "Lufthansa",
+          "verdict": "ABSTAIN_NEEDS_PASSENGER_EVIDENCE",
+          "rule_applied": "EU261-HENNING-DOOR",
+          "summary": "SurgeWhy proved 108 minutes of your delay was a controllable emergency-light bus repair (MNT-4482), defeating Lufthansa's de-icing excuse! However, SurgeWhy refuses to guess on your payout yet: under EU law (Germanwings v. Henning), the 180-minute cliff for \u20ac300 ($325) is measured at the exact minute the cabin door opens. Because wheel-stop was +177m ($0) and jetbridge dock was +184m ($325) - a 7-minute sensor gap right across the 180m line - one timestamped arrival screenshot flips this claim to a 96%-confident $325 win.",
+          "tags": [
+            "LH",
+            "WX-DEICE",
+            "EU261",
+            "MEL-33-12"
+          ],
+          "tier": "PRECEDENT",
+          "relevance_score": 23
+        },
+        {
+          "memory_id": "HMEM-PREC-304",
+          "case_ref": "CLM-9088",
+          "carrier": "British Airways",
+          "verdict": "OVERTURNED_PAY_FULL",
+          "rule_applied": "EU261-ART7-CONN",
+          "summary": "British Airways blamed JFK Air Traffic Control (Code ATC-14) for missing your Heathrow->Paris connection, but FAA logs show ATC delayed departure by only 14 minutes out of your 77-minute connection buffer. Gate log OPS-CAT-19 reveals BA held the plane 41 minutes for late catering carts and gate staffing; without BA's 41-minute catering delay, you would have landed with 63 minutes to spare (18 minutes above the 45-minute connection minimum) and made your Paris flight.",
+          "tags": [
+            "BA",
+            "ATC-14",
+            "EU261_UK261",
+            "OPS-CAT-19"
+          ],
+          "tier": "PRECEDENT",
+          "relevance_score": 16
+        },
+        {
+          "memory_id": "HMEM-SEM-203",
+          "pattern_name": "Henning Door-Open Calibration Rule",
+          "rule": "Under C-452/13, arrival delay is measured at cabin door open, not touchdown or wheel-stop. If sensor uncertainty spans the 180-minute or 240-minute cliff, abstain and request timestamp proof.",
+          "tags": [
+            "door_open",
+            "180",
+            "240",
+            "uncertainty",
+            "EU261",
+            "LH"
+          ],
+          "tier": "SEMANTIC",
+          "relevance_score": 15
+        }
+      ],
+      "committed_after_step_6": {
+        "memory_id": "HMEM-PREC-306",
+        "case_ref": "CLM-9132",
+        "carrier": "Lufthansa",
+        "verdict": "ABSTAIN_NEEDS_PASSENGER_EVIDENCE",
+        "rule_applied": "EU261-HENNING-DOOR",
+        "summary": "SurgeWhy proved 108 minutes of your delay was a controllable emergency-light bus repair (MNT-4482), defeating Lufthansa's de-icing excuse! However, SurgeWhy refuses to guess on your payout yet: under EU law (Germanwings v. Henning), the 180-minute cliff for \u20ac300 ($325) is measured at the exact minute the cabin door opens. Because wheel-stop was +177m ($0) and jetbridge dock was +184m ($325) - a 7-minute sensor gap right across the 180m line - one timestamped arrival screenshot flips this claim to a 96%-confident $325 win.",
+        "tags": [
+          "LH",
+          "WX-DEICE",
+          "EU261",
+          "MEL-33-12"
+        ]
+      }
+    }
+  },
+  "zetaris_queries": [
+    {
+      "query_id": "6e459a4f-e346-4065-9260-8813e8ca4fd0",
+      "request_id": "e617814d-b02e-4194-9d16-3f83d41a422b",
+      "sql": "SELECT * FROM zetaris_ops.flight_disruptions WHERE claim_id = 'CLM-9132'",
+      "source_tables_touched": [
+        "zetaris_ops.flight_disruptions"
+      ],
+      "row_count": 1,
+      "latency_ms": 4.22,
+      "mode": "zetaris-sample-federation",
+      "rows": [
+        {
+          "claim_id": "CLM-9132",
+          "flight_number": "LH-455",
+          "carrier_name": "Lufthansa",
+          "route": "FRA -> SFO",
+          "distance_km": 9155,
+          "jurisdiction": "EU261",
+          "scheduled_dep_utc": "2026-10-21T10:15:00Z",
+          "actual_arr_delay_min": 184,
+          "door_open_uncertainty_min": 7,
+          "airline_claimed_code": "WX-DEICE",
+          "airline_claimed_reason": "Airport Authority Mandatory De-Icing Queue at FRA",
+          "airline_initial_payout_usd": 0,
+          "care_receipts_usd": 0,
+          "fare_surge_charged_usd": 0,
+          "downgrade_fare_paid_usd": 0,
+          "extra_bag_fee_usd": 0,
+          "tail_number": "D-ABYA",
+          "dep_airport": "EDDF",
+          "arr_airport": "KSFO",
+          "connection_buffer_min": 0
+        }
+      ]
+    },
+    {
+      "query_id": "3a1400e8-48e4-4625-81b5-43849d5845dd",
+      "request_id": "c25cd9d2-3f8b-425e-9aaa-19501f420ae6",
+      "sql": "SELECT * FROM zetaris_rest.faa_metar_atc WHERE claim_id = 'CLM-9132'",
+      "source_tables_touched": [
+        "zetaris_rest.faa_metar_atc"
+      ],
+      "row_count": 1,
+      "latency_ms": 4.21,
+      "mode": "zetaris-sample-federation",
+      "rows": [
+        {
+          "metar_id": "METAR-EDDF-1021",
+          "claim_id": "CLM-9132",
+          "airport_icao": "EDDF",
+          "observation_window_utc": "2026-10-21T09:30Z-13:00Z",
+          "visibility_sm": 3.5,
+          "wind_speed_kt": 16,
+          "crosswind_limit_kt": 35,
+          "weather_phenomena": "-SN FZFG (Light Snow & Freezing Fog)",
+          "faa_ground_stop_active": 0,
+          "atc_spacing_delay_min": 76,
+          "peer_concourse_departures_total": 22,
+          "peer_concourse_departures_ontime": 7,
+          "atc_bulletin_note": "Fraport central de-icing pad queue averaged 76 minutes across long-haul departures."
+        }
+      ]
+    },
+    {
+      "query_id": "bc9a89f0-999f-4481-88dd-a22e2b89a0e5",
+      "request_id": "d2c0c6fb-da77-4046-8a5d-831d7702ac6c",
+      "sql": "SELECT * FROM zetaris_policy.passenger_rights_rules WHERE jurisdiction = 'EU261'",
+      "source_tables_touched": [
+        "zetaris_policy.passenger_rights_rules"
+      ],
+      "row_count": 1,
+      "latency_ms": 4.21,
+      "mode": "zetaris-sample-federation",
+      "rows": [
+        {
+          "rule_id": "EU261-HENNING-DOOR",
+          "jurisdiction": "EU261",
+          "applies_to_category": "SPLIT_DELAY_DOOR_BOUNDARY",
+          "min_distance_km": 3500,
+          "min_arrival_delay_min": 180,
+          "full_payout_delay_min": 240,
+          "statutory_cash_usd": 650,
+          "half_tier_cash_usd": 325,
+          "duty_of_care_covered": 1,
+          "fare_surge_cap_applies": 1,
+          "downgrade_refund_pct": 75,
+          "legal_citation": "EU261 Art. 7(2) & Germanwings v. Henning (C-452/13): Arrival time is exact cabin door-open minute; 180-239m yields 50% (\u20ac300 / $325), <=179m yields $0."
+        }
+      ]
+    },
+    {
+      "query_id": "4f5a8fa1-1f24-48cf-a732-3313eb63e3b9",
+      "request_id": "3de4eb8b-8f9d-483d-839b-780665d33ede",
+      "sql": "SELECT * FROM zetaris_maint.aircraft_crew_logs WHERE claim_id = 'CLM-9132'",
+      "source_tables_touched": [
+        "zetaris_maint.aircraft_crew_logs"
+      ],
+      "row_count": 1,
+      "latency_ms": 4.21,
+      "mode": "zetaris-sample-federation",
+      "rows": [
+        {
+          "log_id": "MNT-4482",
+          "claim_id": "CLM-9132",
+          "tail_number": "D-ABYA",
+          "inbound_flight_status": "Landed on time from RJTT",
+          "primary_event_code": "MEL-33-12",
+          "primary_event_category": "SPLIT_MECHANICAL_AND_DEICING",
+          "controllable_minutes": 108,
+          "extraordinary_minutes": 76,
+          "crew_timeout_minutes": 0,
+          "log_summary": "Cabin emergency-lighting bus reboot delayed pushback 108m (controllable) before entering Fraport mandatory 76m de-icing queue; wheel-stop +177m vs jetbridge +184m."
+        }
+      ]
+    },
+    {
+      "query_id": "668fb6d8-6492-4b47-8501-067f25fc868c",
+      "request_id": "9f707271-ede3-43f8-9529-b10893cb07e0",
+      "sql": "SELECT f.claim_id, f.flight_number, f.actual_arr_delay_min, f.door_open_uncertainty_min, w.faa_ground_stop_active, w.atc_spacing_delay_min, m.primary_event_code, m.controllable_minutes, m.crew_timeout_minutes FROM zetaris_ops.flight_disruptions f JOIN zetaris_rest.faa_metar_atc w ON f.claim_id = w.claim_id JOIN zetaris_maint.aircraft_crew_logs m ON f.claim_id = m.claim_id WHERE f.claim_id = 'CLM-9132'",
+      "source_tables_touched": [
+        "zetaris_ops.flight_disruptions",
+        "zetaris_rest.faa_metar_atc",
+        "zetaris_maint.aircraft_crew_logs"
+      ],
+      "row_count": 1,
+      "latency_ms": 4.23,
+      "mode": "zetaris-sample-federation",
+      "rows": [
+        {
+          "claim_id": "CLM-9132",
+          "flight_number": "LH-455",
+          "actual_arr_delay_min": 184,
+          "door_open_uncertainty_min": 7,
+          "faa_ground_stop_active": 0,
+          "atc_spacing_delay_min": 76,
+          "primary_event_code": "MEL-33-12",
+          "controllable_minutes": 108,
+          "crew_timeout_minutes": 0
+        }
+      ]
+    }
+  ],
+  "nightshift_receipts": [
+    {
+      "receipt_id": "NS-RCPT-01-FA236D75",
+      "step_number": 1,
+      "step_name": "Intake & Statutory Scope Agent",
+      "lane": "Lane 1 (Fast Worker)",
+      "requested_model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "model_handled_by": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "provider": "meterless-nightshift (sample-verified)",
+      "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+      "latency_ms": 225.0,
+      "prompt_tokens": 190,
+      "completion_tokens": 48
+    },
+    {
+      "receipt_id": "NS-RCPT-02-C7997275",
+      "step_number": 2,
+      "step_name": "Telemetry Forensics Agent (Round 1 SQL)",
+      "lane": "Lane 1 (Fast Worker)",
+      "requested_model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "model_handled_by": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "provider": "meterless-nightshift (sample-verified)",
+      "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+      "latency_ms": 223.0,
+      "prompt_tokens": 430,
+      "completion_tokens": 60
+    },
+    {
+      "receipt_id": "NS-RCPT-03-F3807398",
+      "step_number": 3,
+      "step_name": "Devil's Advocate Airline Counsel Critic",
+      "lane": "Lane 2 (Deep Worker)",
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "model_handled_by": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "provider": "meterless-nightshift (sample-verified)",
+      "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+      "latency_ms": 445.0,
+      "prompt_tokens": 338,
+      "completion_tokens": 83
+    },
+    {
+      "receipt_id": "NS-RCPT-04-A6B2EC73",
+      "step_number": 4,
+      "step_name": "Telemetry Forensics Agent (Round 2 Tail & Crew SQL)",
+      "lane": "Lane 1 (Fast Worker)",
+      "requested_model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "model_handled_by": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "provider": "meterless-nightshift (sample-verified)",
+      "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+      "latency_ms": 229.0,
+      "prompt_tokens": 280,
+      "completion_tokens": 91
+    },
+    {
+      "receipt_id": "NS-RCPT-05-F5A2B483",
+      "step_number": 5,
+      "step_name": "Counterfactual & Threshold Boundary Engine",
+      "lane": "Lane 2 (Deep Worker)",
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "model_handled_by": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "provider": "meterless-nightshift (sample-verified)",
+      "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+      "latency_ms": 444.0,
+      "prompt_tokens": 1178,
+      "completion_tokens": 43
+    },
+    {
+      "receipt_id": "NS-RCPT-06-69FF3CE6",
+      "step_number": 6,
+      "step_name": "Explainable Legal Brief & Claim Packet Agent",
+      "lane": "Lane 2 (Deep Worker)",
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "model_handled_by": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "provider": "meterless-nightshift (sample-verified)",
+      "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+      "latency_ms": 434.0,
+      "prompt_tokens": 356,
+      "completion_tokens": 93
+    }
+  ],
+  "steps": [
+    {
+      "step_number": 1,
+      "agent_name": "Intake & Statutory Scope Agent",
+      "role_badge": "SCOUT INTENT + H-MEM",
+      "summary": "Classified CLM-9132 (LH-455) as SPLIT_CAUSE_BOUNDARY_CHECK (ambiguity risk 74/100, abstention_watch=True). Recalled 3 H-MEM precedents and delegated Round 1 SQL across 3 Zetaris tables.",
+      "sql_queries": [],
+      "world_version": 1,
+      "markov_capsule": {
+        "step_index": 1,
+        "step_name": "Intake & Statutory Scope Agent",
+        "world_version": 1,
+        "verified_citations": [
+          "HMEM-PREC-303",
+          "HMEM-PREC-304",
+          "HMEM-SEM-203"
+        ],
+        "open_questions": [
+          "Verify carrier claim code against live METAR and statutory payout rules"
+        ],
+        "active_verdict_draft": "Pending telemetry verification for SPLIT_CAUSE_BOUNDARY_CHECK",
+        "capsule_tokens": 103,
+        "raw_cumulative_tokens": 907
+      },
+      "model_receipt": {
+        "receipt_id": "NS-RCPT-01-FA236D75",
+        "step_number": 1,
+        "step_name": "Intake & Statutory Scope Agent",
+        "lane": "Lane 1 (Fast Worker)",
+        "requested_model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "model_handled_by": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "provider": "meterless-nightshift (sample-verified)",
+        "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+        "latency_ms": 225.0,
+        "prompt_tokens": 190,
+        "completion_tokens": 48
+      }
+    },
+    {
+      "step_number": 2,
+      "agent_name": "Telemetry Forensics Agent (Round 1)",
+      "role_badge": "ZETARIS SQL DISCOVERY",
+      "summary": "Queried flight_disruptions, faa_metar_atc, and passenger_rights_rules via Zetaris. Observed -SN FZFG (Light Snow & Freezing Fog) at EDDF with 7/22 peer flights on time. Drafting preliminary finding from external weather telemetry.",
+      "sql_queries": [
+        {
+          "query_id": "6e459a4f-e346-4065-9260-8813e8ca4fd0",
+          "request_id": "e617814d-b02e-4194-9d16-3f83d41a422b",
+          "sql": "SELECT * FROM zetaris_ops.flight_disruptions WHERE claim_id = 'CLM-9132'",
+          "source_tables_touched": [
+            "zetaris_ops.flight_disruptions"
+          ],
+          "row_count": 1,
+          "latency_ms": 4.22,
+          "mode": "zetaris-sample-federation",
+          "rows": [
+            {
+              "claim_id": "CLM-9132",
+              "flight_number": "LH-455",
+              "carrier_name": "Lufthansa",
+              "route": "FRA -> SFO",
+              "distance_km": 9155,
+              "jurisdiction": "EU261",
+              "scheduled_dep_utc": "2026-10-21T10:15:00Z",
+              "actual_arr_delay_min": 184,
+              "door_open_uncertainty_min": 7,
+              "airline_claimed_code": "WX-DEICE",
+              "airline_claimed_reason": "Airport Authority Mandatory De-Icing Queue at FRA",
+              "airline_initial_payout_usd": 0,
+              "care_receipts_usd": 0,
+              "fare_surge_charged_usd": 0,
+              "downgrade_fare_paid_usd": 0,
+              "extra_bag_fee_usd": 0,
+              "tail_number": "D-ABYA",
+              "dep_airport": "EDDF",
+              "arr_airport": "KSFO",
+              "connection_buffer_min": 0
+            }
+          ]
+        },
+        {
+          "query_id": "3a1400e8-48e4-4625-81b5-43849d5845dd",
+          "request_id": "c25cd9d2-3f8b-425e-9aaa-19501f420ae6",
+          "sql": "SELECT * FROM zetaris_rest.faa_metar_atc WHERE claim_id = 'CLM-9132'",
+          "source_tables_touched": [
+            "zetaris_rest.faa_metar_atc"
+          ],
+          "row_count": 1,
+          "latency_ms": 4.21,
+          "mode": "zetaris-sample-federation",
+          "rows": [
+            {
+              "metar_id": "METAR-EDDF-1021",
+              "claim_id": "CLM-9132",
+              "airport_icao": "EDDF",
+              "observation_window_utc": "2026-10-21T09:30Z-13:00Z",
+              "visibility_sm": 3.5,
+              "wind_speed_kt": 16,
+              "crosswind_limit_kt": 35,
+              "weather_phenomena": "-SN FZFG (Light Snow & Freezing Fog)",
+              "faa_ground_stop_active": 0,
+              "atc_spacing_delay_min": 76,
+              "peer_concourse_departures_total": 22,
+              "peer_concourse_departures_ontime": 7,
+              "atc_bulletin_note": "Fraport central de-icing pad queue averaged 76 minutes across long-haul departures."
+            }
+          ]
+        },
+        {
+          "query_id": "bc9a89f0-999f-4481-88dd-a22e2b89a0e5",
+          "request_id": "d2c0c6fb-da77-4046-8a5d-831d7702ac6c",
+          "sql": "SELECT * FROM zetaris_policy.passenger_rights_rules WHERE jurisdiction = 'EU261'",
+          "source_tables_touched": [
+            "zetaris_policy.passenger_rights_rules"
+          ],
+          "row_count": 1,
+          "latency_ms": 4.21,
+          "mode": "zetaris-sample-federation",
+          "rows": [
+            {
+              "rule_id": "EU261-HENNING-DOOR",
+              "jurisdiction": "EU261",
+              "applies_to_category": "SPLIT_DELAY_DOOR_BOUNDARY",
+              "min_distance_km": 3500,
+              "min_arrival_delay_min": 180,
+              "full_payout_delay_min": 240,
+              "statutory_cash_usd": 650,
+              "half_tier_cash_usd": 325,
+              "duty_of_care_covered": 1,
+              "fare_surge_cap_applies": 1,
+              "downgrade_refund_pct": 75,
+              "legal_citation": "EU261 Art. 7(2) & Germanwings v. Henning (C-452/13): Arrival time is exact cabin door-open minute; 180-239m yields 50% (\u20ac300 / $325), <=179m yields $0."
+            }
+          ]
+        }
+      ],
+      "world_version": 5,
+      "markov_capsule": {
+        "step_index": 2,
+        "step_name": "Telemetry Forensics Agent (Round 1 SQL)",
+        "world_version": 5,
+        "verified_citations": [
+          "zetaris_ops.flight_disruptions#CLM-9132",
+          "zetaris_rest.faa_metar_atc#METAR-EDDF-1021",
+          "zetaris_policy.passenger_rights_rules#EU261-HENNING-DOOR"
+        ],
+        "open_questions": [
+          "Unverified inbound aircraft tail history, MEL mechanical logs, and crew duty timers"
+        ],
+        "active_verdict_draft": "Preliminary weather check complete; tail-level causation still unproven",
+        "capsule_tokens": 134,
+        "raw_cumulative_tokens": 2251
+      },
+      "model_receipt": {
+        "receipt_id": "NS-RCPT-02-C7997275",
+        "step_number": 2,
+        "step_name": "Telemetry Forensics Agent (Round 1 SQL)",
+        "lane": "Lane 1 (Fast Worker)",
+        "requested_model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "model_handled_by": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "provider": "meterless-nightshift (sample-verified)",
+        "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+        "latency_ms": 223.0,
+        "prompt_tokens": 430,
+        "completion_tokens": 60
+      }
+    },
+    {
+      "step_number": 3,
+      "agent_name": "Devil's Advocate Airline Counsel Critic",
+      "role_badge": "ADVERSARIAL REJECTION",
+      "summary": "PROOF_INSUFFICIENT_BOUNDARY_HAZARD: Recorded arrival delay is 184m with +/-7m door-open uncertainty right across the 180-minute Henning threshold! Mandatory Round 2 SQL: audit zetaris_maint.aircraft_crew_logs for tail D-ABYA to isolate mechanical reboot minutes from Fraport de-icing minutes before issuing any payout.",
+      "sql_queries": [],
+      "world_version": 7,
+      "markov_capsule": {
+        "step_index": 3,
+        "step_name": "Devil's Advocate Airline Counsel Critic",
+        "world_version": 7,
+        "verified_citations": [
+          "zetaris_ops.flight_disruptions#CLM-9132",
+          "zetaris_rest.faa_metar_atc#METAR-EDDF-1021",
+          "zetaris_policy.passenger_rights_rules#EU261-HENNING-DOOR"
+        ],
+        "open_questions": [
+          "Execute tail & crew log audit on D-ABYA"
+        ],
+        "active_verdict_draft": "BLOCKED BY CRITIC: Awaiting Round 2 aircraft_crew_logs proof",
+        "capsule_tokens": 120,
+        "raw_cumulative_tokens": 3678
+      },
+      "model_receipt": {
+        "receipt_id": "NS-RCPT-03-F3807398",
+        "step_number": 3,
+        "step_name": "Devil's Advocate Airline Counsel Critic",
+        "lane": "Lane 2 (Deep Worker)",
+        "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "model_handled_by": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "provider": "meterless-nightshift (sample-verified)",
+        "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+        "latency_ms": 445.0,
+        "prompt_tokens": 338,
+        "completion_tokens": 83
+      }
+    },
+    {
+      "step_number": 4,
+      "agent_name": "Telemetry Forensics Agent (Round 2)",
+      "role_badge": "TARGETED RE-QUERY",
+      "summary": "Executed Round 2 Zetaris SQL on aircraft_crew_logs#MNT-4482 and federated 3-table join. Confirmed SPLIT_MECHANICAL_AND_DEICING (Cabin emergency-lighting bus reboot delayed pushback 108m (controllable) before entering Fraport mandatory 76m de-icing queue; wheel-stop +177m vs jetbridge +184m.) and updated 2 causal hypotheses in CausalWorldModel v10.",
+      "sql_queries": [
+        {
+          "query_id": "4f5a8fa1-1f24-48cf-a732-3313eb63e3b9",
+          "request_id": "3de4eb8b-8f9d-483d-839b-780665d33ede",
+          "sql": "SELECT * FROM zetaris_maint.aircraft_crew_logs WHERE claim_id = 'CLM-9132'",
+          "source_tables_touched": [
+            "zetaris_maint.aircraft_crew_logs"
+          ],
+          "row_count": 1,
+          "latency_ms": 4.21,
+          "mode": "zetaris-sample-federation",
+          "rows": [
+            {
+              "log_id": "MNT-4482",
+              "claim_id": "CLM-9132",
+              "tail_number": "D-ABYA",
+              "inbound_flight_status": "Landed on time from RJTT",
+              "primary_event_code": "MEL-33-12",
+              "primary_event_category": "SPLIT_MECHANICAL_AND_DEICING",
+              "controllable_minutes": 108,
+              "extraordinary_minutes": 76,
+              "crew_timeout_minutes": 0,
+              "log_summary": "Cabin emergency-lighting bus reboot delayed pushback 108m (controllable) before entering Fraport mandatory 76m de-icing queue; wheel-stop +177m vs jetbridge +184m."
+            }
+          ]
+        },
+        {
+          "query_id": "668fb6d8-6492-4b47-8501-067f25fc868c",
+          "request_id": "9f707271-ede3-43f8-9529-b10893cb07e0",
+          "sql": "SELECT f.claim_id, f.flight_number, f.actual_arr_delay_min, f.door_open_uncertainty_min, w.faa_ground_stop_active, w.atc_spacing_delay_min, m.primary_event_code, m.controllable_minutes, m.crew_timeout_minutes FROM zetaris_ops.flight_disruptions f JOIN zetaris_rest.faa_metar_atc w ON f.claim_id = w.claim_id JOIN zetaris_maint.aircraft_crew_logs m ON f.claim_id = m.claim_id WHERE f.claim_id = 'CLM-9132'",
+          "source_tables_touched": [
+            "zetaris_ops.flight_disruptions",
+            "zetaris_rest.faa_metar_atc",
+            "zetaris_maint.aircraft_crew_logs"
+          ],
+          "row_count": 1,
+          "latency_ms": 4.23,
+          "mode": "zetaris-sample-federation",
+          "rows": [
+            {
+              "claim_id": "CLM-9132",
+              "flight_number": "LH-455",
+              "actual_arr_delay_min": 184,
+              "door_open_uncertainty_min": 7,
+              "faa_ground_stop_active": 0,
+              "atc_spacing_delay_min": 76,
+              "primary_event_code": "MEL-33-12",
+              "controllable_minutes": 108,
+              "crew_timeout_minutes": 0
+            }
+          ]
+        }
+      ],
+      "world_version": 10,
+      "markov_capsule": {
+        "step_index": 4,
+        "step_name": "Telemetry Forensics Agent (Round 2 Tail & Crew SQL)",
+        "world_version": 10,
+        "verified_citations": [
+          "zetaris_ops.flight_disruptions#CLM-9132",
+          "zetaris_rest.faa_metar_atc#METAR-EDDF-1021",
+          "zetaris_policy.passenger_rights_rules#EU261-HENNING-DOOR",
+          "zetaris_maint.aircraft_crew_logs#MNT-4482"
+        ],
+        "open_questions": [
+          "Compute exact counterfactual flip boundaries and confidence calibration"
+        ],
+        "active_verdict_draft": "ABSTAIN_NEEDS_PASSENGER_EVIDENCE ($0)",
+        "capsule_tokens": 134,
+        "raw_cumulative_tokens": 5308
+      },
+      "model_receipt": {
+        "receipt_id": "NS-RCPT-04-A6B2EC73",
+        "step_number": 4,
+        "step_name": "Telemetry Forensics Agent (Round 2 Tail & Crew SQL)",
+        "lane": "Lane 1 (Fast Worker)",
+        "requested_model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "model_handled_by": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "provider": "meterless-nightshift (sample-verified)",
+        "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+        "latency_ms": 229.0,
+        "prompt_tokens": 280,
+        "completion_tokens": 91
+      }
+    },
+    {
+      "step_number": 5,
+      "agent_name": "Counterfactual & Threshold Boundary Engine",
+      "role_badge": "COUNTERFACTUAL FLIP MATH",
+      "summary": "Computed 2 counterfactual flip boundaries. Calibrated confidence=62% (abstention_triggered=True). Verdict: PAUSED AT 62% CONFIDENCE: 1 DOCUMENT NEEDED TO UNLOCK $325.",
+      "sql_queries": [],
+      "world_version": 11,
+      "markov_capsule": {
+        "step_index": 5,
+        "step_name": "Counterfactual & Threshold Boundary Engine",
+        "world_version": 11,
+        "verified_citations": [
+          "zetaris_ops.flight_disruptions#CLM-9132",
+          "zetaris_rest.faa_metar_atc#METAR-EDDF-1021",
+          "zetaris_policy.passenger_rights_rules#EU261-HENNING-DOOR",
+          "zetaris_maint.aircraft_crew_logs#MNT-4482"
+        ],
+        "open_questions": [
+          "Upload 1 timestamped proof of SFO cabin door-open time (e.g., phone photo EXIF in jetbridge, cellular 'Welcome to USA' SMS, or flight-attendant log) resolving the 7-minute gap between wheel-stop (+177m) and jetbridge dock (+184m)."
+        ],
+        "active_verdict_draft": "PAUSED AT 62% CONFIDENCE: 1 DOCUMENT NEEDED TO UNLOCK $325",
+        "capsule_tokens": 182,
+        "raw_cumulative_tokens": 7087
+      },
+      "model_receipt": {
+        "receipt_id": "NS-RCPT-05-F5A2B483",
+        "step_number": 5,
+        "step_name": "Counterfactual & Threshold Boundary Engine",
+        "lane": "Lane 2 (Deep Worker)",
+        "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "model_handled_by": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "provider": "meterless-nightshift (sample-verified)",
+        "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+        "latency_ms": 444.0,
+        "prompt_tokens": 1178,
+        "completion_tokens": 43
+      }
+    },
+    {
+      "step_number": 6,
+      "agent_name": "Explainable Legal Brief & Claim Packet Agent",
+      "role_badge": "CITED PROOF PACKET + H-MEM",
+      "summary": "Generated plain-English causal proof chain, ruled-out defense ledger, and passenger demand brief; persisted precedent to H-MEM.",
+      "sql_queries": [],
+      "world_version": 11,
+      "markov_capsule": {
+        "step_index": 6,
+        "step_name": "Explainable Legal Brief & Claim Packet Agent",
+        "world_version": 11,
+        "verified_citations": [
+          "zetaris_ops.flight_disruptions#CLM-9132",
+          "zetaris_rest.faa_metar_atc#METAR-EDDF-1021",
+          "zetaris_policy.passenger_rights_rules#EU261-HENNING-DOOR",
+          "zetaris_maint.aircraft_crew_logs#MNT-4482",
+          "HMEM-PREC-306"
+        ],
+        "open_questions": [],
+        "active_verdict_draft": "PAUSED AT 62% CONFIDENCE: 1 DOCUMENT NEEDED TO UNLOCK $325",
+        "capsule_tokens": 125,
+        "raw_cumulative_tokens": 8959
+      },
+      "model_receipt": {
+        "receipt_id": "NS-RCPT-06-69FF3CE6",
+        "step_number": 6,
+        "step_name": "Explainable Legal Brief & Claim Packet Agent",
+        "lane": "Lane 2 (Deep Worker)",
+        "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "model_handled_by": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "provider": "meterless-nightshift (sample-verified)",
+        "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+        "latency_ms": 434.0,
+        "prompt_tokens": 356,
+        "completion_tokens": 93
+      }
+    }
+  ]
+}

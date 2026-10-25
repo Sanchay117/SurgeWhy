@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>SurgeWhy Pitch Deck - Open Agent Hackathon 2026 (Track 2)</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #050914; color: #F8FAFC; font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif; }
+  .slide {
+    width: 1280px;
+    height: 720px;
+    padding: 56px 68px;
+    background: radial-gradient(circle at 85% 15%, #102A52 0%, #060B17 62%);
+    border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    page-break-after: always;
+    position: relative;
+    overflow: hidden;
+  }
+  .kicker {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #38BDF8;
+    margin-bottom: 14px;
+  }
+  h1 { font-size: 56px; font-weight: 900; line-height: 1.06; letter-spacing: -0.03em; }
+  h2 { font-size: 40px; font-weight: 800; line-height: 1.12; letter-spacing: -0.02em; margin-bottom: 18px; }
+  .accent { color: #38BDF8; }
+  .emerald { color: #10B981; }
+  .rose { color: #FB7185; }
+  .lead { font-size: 22px; color: #CBD5E1; line-height: 1.5; max-width: 980px; margin-top: 16px; }
+  .cols-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-top: 16px; }
+  .cols-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 16px; }
+  .cols-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-top: 16px; }
+  .box {
+    background: rgba(15, 25, 48, 0.85);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 16px;
+    padding: 24px;
+  }
+  .box h3 { font-size: 20px; margin-bottom: 10px; color: #38BDF8; }
+  .box p, .box li { font-size: 16.5px; line-height: 1.52; color: #E2E8F0; }
+  .box ul { padding-left: 20px; }
+  .footer {
+    display: flex;
+    justify-content: space-between;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 12px;
+    color: #64748B;
+  }
+  .stat { font-size: 44px; font-weight: 900; color: #10B981; margin-bottom: 6px; }
+  @media print {
+    @page { size: 1280px 720px; margin: 0; }
+    .slide { border-bottom: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SLIDE 1 -->
+<section class="slide">
+  <div>
+    <div class="kicker">Open Agent Hackathon 2026 · Track 2: The Agent That Can Explain Why</div>
+    <h1>Surge<span class="accent">Why</span></h1>
+    <h2 style="margin-top:14px;font-weight:700;color:#E2E8F0;">When an airline blames "weather" to pay you $0, SurgeWhy proves <span class="emerald">why</span> your flight was actually delayed - and what flips the verdict.</h2>
+    <p class="lead">Built by Team <b>Push And Pray</b> · Powered by <b>Zetaris</b> (Data), <b>Cursor + 4 Meterless Engines</b> (Build), and <b>Meterless Nightshift + NVIDIA Nemotron 30B/120B</b> (Power).</p>
+  </div>
+  <div class="cols-3">
+    <div class="box"><div class="stat">$6.8B</div><p>Valid passenger delay & fare-surge claims left unpaid annually due to opaque excuse codes.</p></div>
+    <div class="box"><div class="stat">4 Sources</div><p>Federated via Zetaris SQL: Gate Logs, Live NOAA METAR/ATC, Tail MEL/Crew Logs & Statutory Rules.</p></div>
+    <div class="box"><div class="stat">100% Cited</div><p>Every verdict shows exact causal proof, ruled-out defenses, counterfactual flips & calibrated confidence.</p></div>
+  </div>
+  <div class="footer"><span>SurgeWhy · Team Push And Pray</span><span>Slide 01 / 08</span></div>
+</section>
+
+<!-- SLIDE 2 -->
+<section class="slide">
+  <div>
+    <div class="kicker">01 · The Everyday Black-Box Problem</div>
+    <h2>"Claim Denied ($0): <span class="rose">Extraordinary Weather</span>"</h2>
+    <p class="lead">Airlines reject millions of valid claims with two-word automated codes. Passengers cannot see airport METAR weather, neighboring concourse departures, or aircraft maintenance logs.</p>
+    <div class="cols-2" style="margin-top:28px;">
+      <div class="box" style="border-color:rgba(244,63,94,0.45);">
+        <h3 class="rose">What the Airline Bot Says (Flight UA-418 SFO->LHR)</h3>
+        <p>"Delayed 4h 25m due to Extraordinary Weather at Departure Hub (Code WX-88). Payout: $0."</p>
+      </div>
+      <div class="box" style="border-color:rgba(16,185,129,0.45);">
+        <h3 class="emerald">What Zetaris Federated Telemetry Reveals</h3>
+        <p>KSFO had 10-mile clear skies & 14/14 peer gates departed on time. Tail N784UA had a 148m brake sensor repair (MEL-32-41) that caused a 117m pilot duty timeout -> <b>$890 legally owed!</b></p>
+      </div>
+    </div>
+  </div>
+  <div class="footer"><span>SurgeWhy · Problem & Stakes</span><span>Slide 02 / 08</span></div>
+</section>
+
+<!-- SLIDE 3 -->
+<section class="slide">
+  <div>
+    <div class="kicker">02 · Track 2 Explainability Standard</div>
+    <h2>Four Auditable Pillars in Every Decision</h2>
+    <div class="cols-2" style="margin-top:22px;">
+      <div class="box"><h3>1. Primary-Key Causal Chain</h3><p>Traces every step from Carrier Claim -> NOAA METAR -> Tail MEL/Crew Log -> Statutory Clause with clickable <code>[schema.table#id]</code> citations.</p></div>
+      <div class="box"><h3>2. Ruled-Out Hypotheses Ledger</h3><p>Explicitly lists competing defenses tested and falsified (local weather, ATC ground stop, inbound bird strike) or honestly upheld.</p></div>
+      <div class="box"><h3>3. Live Counterfactual Flip Lab</h3><p>Computes the exact minimum change in arrival minutes, Ground Stop status, or maintenance minutes that flips OVERTURNED to DENIED.</p></div>
+      <div class="box"><h3>4. Calibrated Confidence & Abstention</h3><p>When sensor uncertainty (+/-7m cabin door-open gap on LH-455) straddles the 180m legal cliff, SurgeWhy pauses at 62% confidence and asks for 1 photo.</p></div>
+    </div>
+  </div>
+  <div class="footer"><span>SurgeWhy · Explainability Architecture</span><span>Slide 03 / 08</span></div>
+</section>
+
+<!-- SLIDE 4 -->
+<section class="slide">
+  <div>
+    <div class="kicker">03 · Non-Linear Multi-Agent Collaboration</div>
+    <h2>Adversarial <span class="rose">Airline Counsel Critic</span> Loop</h2>
+    <p class="lead">SurgeWhy never jumps straight from clear local weather to a payout. Step 3 roleplays the airline's defense lawyer to break weak proofs.</p>
+    <div class="cols-3" style="margin-top:24px;">
+      <div class="box"><h3>Steps 1-2: Round 1 SQL</h3><p><b>Nemotron 30B (Lane 1)</b> runs Scout Intent, recalls H-MEM precedents, and queries Gate, METAR & Policy tables via Zetaris.</p></div>
+      <div class="box" style="border-color:rgba(244,63,94,0.5);"><h3 class="rose">Step 3: Counsel Rejects R1</h3><p><b>Nemotron 120B (Lane 2)</b> blocks R1: "Clear SFO skies don't disprove a bird strike on inbound leg N784UA! Query aircraft_crew_logs."</p></div>
+      <div class="box" style="border-color:rgba(16,185,129,0.5);"><h3 class="emerald">Steps 4-6: R2 Proof & Flip</h3><p>Targeted Round 2 SQL proves MEL-32-41 + crew timeout, runs Counterfactual Boundary math, and writes the cited legal brief.</p></div>
+    </div>
+  </div>
+  <div class="footer"><span>SurgeWhy · Multi-Agent Loop</span><span>Slide 04 / 08</span></div>
+</section>
+
+<!-- SLIDE 5 -->
+<section class="slide">
+  <div>
+    <div class="kicker">04 · Layer 01 (DATA) & Layer 02 (BUILD)</div>
+    <h2>Zetaris SQL Federation + Cursor & All 4 Meterless Engines</h2>
+    <div class="cols-4" style="margin-top:24px;">
+      <div class="box"><h3>Scout Intent</h3><p>Classifies 5 dispute types, scores boundary ambiguity risk, and routes Nightshift lanes.</p></div>
+      <div class="box"><h3>World Model</h3><p>Versioned causal evidence & hypothesis graph (v1->v11) with optimistic concurrency locking.</p></div>
+      <div class="box"><h3>Markovian</h3><p>Compresses multi-step SQL & legal turns into <=380-token capsules (<b>91.3% token savings</b>).</p></div>
+      <div class="box"><h3>H-MEM</h3><p>Recalls carrier pretext patterns (WX-88, ATC-14) across sessions and persists new precedents.</p></div>
+    </div>
+    <div class="box" style="margin-top:20px;">
+      <h3>Zetaris Single-Statement REST SQL + Cursor Workflow</h3>
+      <p>Built with Cursor Agent Mode (<code>AGENTS.md</code> + <code>.cursor/rules/surgewhy.mdc</code>), enforcing single-statement <code>POST /api/v1.0/sql-editor/sqls/run</code> calls with fresh UUID4 <code>X-Request-ID</code> headers.</p>
+    </div>
+  </div>
+  <div class="footer"><span>SurgeWhy · Data & Build Layers</span><span>Slide 05 / 08</span></div>
+</section>
+
+<!-- SLIDE 6 -->
+<section class="slide">
+  <div>
+    <div class="kicker">05 · Layer 03 (POWER): Meterless Nightshift & NVIDIA Nemotron</div>
+    <h2>Dual NVIDIA Nemotron Lanes + Per-Step Model Receipts</h2>
+    <div class="cols-2" style="margin-top:24px;">
+      <div class="box">
+        <h3>Lane 1: Fast Worker (Steps 1, 2, 4)</h3>
+        <p><code>nvidia/nemotron-3.5-lightning-30b-a3b</code></p>
+        <p style="margin-top:10px;">Handles low-latency intake scoping, Round 1 Zetaris SQL discovery, and Round 2 tail-log SQL re-queries via Nightshift (<code>127.0.0.1:8088/v1</code>).</p>
+      </div>
+      <div class="box">
+        <h3 style="color:#A78BFA;">Lane 2: Deep Worker (Steps 3, 5, 6)</h3>
+        <p><code>nvidia/nemotron-3.5-super-vl-120b-a12b</code></p>
+        <p style="margin-top:10px;">Powers the adversarial Airline Counsel Critic, exact Counterfactual Boundary math, confidence calibration, and legal demand packet.</p>
+      </div>
+    </div>
+  </div>
+  <div class="footer"><span>SurgeWhy · Power Layer & NVIDIA DGX Spark Target</span><span>Slide 06 / 08</span></div>
+</section>
+
+<!-- SLIDE 7 -->
+<section class="slide">
+  <div>
+    <div class="kicker">06 · Calibrated Honesty Across All 5 Benchmark Cases</div>
+    <h2>Overturns Pretexts, Upholds Real Storms & Refuses to Guess</h2>
+    <div class="box" style="margin-top:16px;">
+      <ul>
+        <li><b>CASE-01 (UA-418 SFO->LHR):</b> Fake WX-88 weather overturned via MEL-32-41 + Part 117 log -> <b>PAY $890</b> (97% conf).</li>
+        <li style="margin-top:10px;"><b>CASE-02 (BA-112 JFK->LHR->CDG):</b> 14m ATC vs 41m catering but-for connection proof -> <b>PAY $715</b> (95% conf).</li>
+        <li style="margin-top:10px;"><b>CASE-03 (DL-809 ATL->MIA):</b> 54kt microburst storm UPHELD ($0 delay cash), unlawful rebook surge caught -> <b>REFUND $310</b> (96% conf).</li>
+        <li style="margin-top:10px;"><b>CASE-04 (LH-455 FRA->SFO):</b> +/-7m cabin door-open gap across 180m Henning cliff -> <b>PAUSED AT 62% CONFIDENCE</b> (1 photo unlocks $325).</li>
+        <li style="margin-top:10px;"><b>CASE-05 (AA-204 DFW->ORD):</b> Healthy B787 pulled for sports charter + Business downgrade -> <b>PAY $1,140</b> (98% conf).</li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer"><span>SurgeWhy · Benchmark Evaluation</span><span>Slide 07 / 08</span></div>
+</section>
+
+<!-- SLIDE 8 -->
+<section class="slide">
+  <div>
+    <div class="kicker">07 · Reproducible Verification in Under 30 Seconds</div>
+    <h2>Zero-Friction Judging · Full Open-Source Proof</h2>
+    <div class="cols-3" style="margin-top:26px;">
+      <div class="box"><div class="stat">3 / 3</div><p><code>python3 smoke_test.py</code> passes Data UI, Zetaris REST SQL, and Nightshift Nemotron checks.</p></div>
+      <div class="box"><div class="stat">9 / 9</div><p>Automated unit & conformance tests pass in <code>0.007s</code> across all 4 Meterless Engines & counterfactual flips.</p></div>
+      <div class="box"><div class="stat">91.7%</div><p>Average Markovian multi-turn token reduction across all 5 flight adjudication benchmarks.</p></div>
+    </div>
+  </div>
+  <div class="footer"><span>github.com/Sanchay117/surgewhy · Team Push And Pray</span><span>Slide 08 / 08</span></div>
+</section>
+
+</body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "case_id": "CASE-01",
+  "claim_id": "CLM-9041",
+  "flight_number": "UA-418",
+  "passenger_name": "Maya Patel",
+  "route": "SFO -> LHR",
+  "carrier_denial_notice": "CLAIM DENIED ($0 PAYOUT): Flight UA-418 arrived 4h 25m late due to Extraordinary Weather Conditions at Departure Hub (Code WX-88).",
+  "passenger_statement": "It was a crystal-clear evening in San Francisco and planes at the gates on both sides of us pushed back on time. We sat at Gate G94 for over four hours and I paid $240 out of pocket for food and airport lodging. Why was I denied?",
+  "claimed_rule_Hint": "UK261-ART7-LH"
+}

@@ -1,0 +1,3 @@
+pokemon_name,ability_name,is_hidden
+pikachu,static,false
+pikachu,lightning-rod,true

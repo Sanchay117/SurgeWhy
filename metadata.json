@@ -1,0 +1,99 @@
+{
+  "project_name": "SurgeWhy",
+  "team_name": "Push And Pray",
+  "event": "Open Agent Hackathon 2026",
+  "track": "Track 2: The Agent That Can Explain Why",
+  "bonus_awards_targeted": [
+    "NVIDIA Nemotron Award (DGX Spark Founder's Edition)",
+    "Best Cursor-Built Product"
+  ],
+  "repository_url": "https://github.com/Sanchay117/surgewhy",
+  "sponsor_tech": {
+    "data_layer_zetaris": {
+      "used": true,
+      "integration_type": "Zetaris REST SQL API (POST /api/v1.0/sql-editor/sqls/run) + Lightning SQL SchemaStore & FAA/NOAA METAR REST Table",
+      "code_paths": [
+        "agent/tools_zetaris.py",
+        "scripts/register_zetaris_sources.sql",
+        "scripts/preflight.py"
+      ],
+      "sources_queried": [
+        "zetaris_ops.flight_disruptions",
+        "zetaris_rest.faa_metar_atc",
+        "zetaris_maint.aircraft_crew_logs",
+        "zetaris_policy.passenger_rights_rules",
+        "pokeapi.pikachu_abilities_table"
+      ]
+    },
+    "build_layer_cursor": {
+      "used": true,
+      "models_and_modes": [
+        "Cursor Agent Mode guided by AGENTS.md and .cursor/rules/surgewhy.mdc",
+        "Cursor Composer for rapid multi-file wiring, Interactive Causal Proof Tree UI, What-If Counterfactual Simulator, and test suite",
+        "Grok in Cursor for designing counterfactual threshold boundary math, calibrated abstention logic, and adversarial Airline Defense Critic loop"
+      ],
+      "how_cursor_was_used": "We used Cursor Agent Mode with AGENTS.md, .cursor/rules/surgewhy.mdc, and the Meterless Engines prompt library (meterless.ai/engines.html) to implement and verify all four Meterless Engines, enforce single-statement Zetaris REST SQL guardrails, build the live counterfactual flip engine, and validate the automated conformance test suite.",
+      "config_files": [
+        "AGENTS.md",
+        ".cursor/rules/surgewhy.mdc"
+      ]
+    },
+    "build_layer_meterless_engines": {
+      "used": true,
+      "engines_implemented": [
+        {
+          "name": "Scout Intent",
+          "code_path": "agent/engines/scout_intent.py",
+          "test": "tests/test_meterless_engines.py::test_01_scout_intent_dispute_routing_and_ambiguity_gate"
+        },
+        {
+          "name": "World Model",
+          "code_path": "agent/engines/world_model.py",
+          "test": "tests/test_meterless_engines.py::test_02_world_model_causal_graph_and_optimistic_locking"
+        },
+        {
+          "name": "Markovian Thinking",
+          "code_path": "agent/engines/markovian.py",
+          "test": "tests/test_meterless_engines.py::test_03_markovian_proof_capsule_compression"
+        },
+        {
+          "name": "H-MEM (Hierarchical Memory)",
+          "code_path": "agent/engines/h_mem.py",
+          "test": "tests/test_meterless_engines.py::test_04_hmem_carrier_pretext_precedent_recall"
+        }
+      ]
+    },
+    "power_layer_meterless_nightshift_and_nvidia_nemotron": {
+      "used": true,
+      "primary_provider": "Meterless Nightshift Runtime (http://127.0.0.1:8088/v1)",
+      "runtime_headers": [
+        "Authorization: Bearer <METERLESS_RUNTIME_TOKEN>",
+        "meterless-app: surgewhy-agent",
+        "meterless-scope: user"
+      ],
+      "models_used": [
+        {
+          "lane": "Lane 1 (Fast Worker)",
+          "model_id": "nvidia/nemotron-3.5-lightning-30b-a3b",
+          "steps_handled": [
+            "Step 1: Intake & Statutory Scope Agent",
+            "Step 2: Telemetry Forensics Agent (Round 1 SQL Discovery)",
+            "Step 4: Telemetry Forensics Agent (Round 2 Tail & Crew SQL Re-Query)"
+          ]
+        },
+        {
+          "lane": "Lane 2 (Deep Worker)",
+          "model_id": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+          "steps_handled": [
+            "Step 3: Devil's Advocate Airline Counsel Critic Agent",
+            "Step 5: Counterfactual & Threshold Boundary Engine Agent",
+            "Step 6: Explainable Legal Brief & Claim Packet Agent"
+          ]
+        }
+      ],
+      "code_path": "agent/llm.py",
+      "smoke_test": "smoke_test.py"
+    }
+  },
+  "pre_existing_components": "None. Built 100% during the Open Agent Hackathon 2026 build window (22-27 October 2026)."
+}

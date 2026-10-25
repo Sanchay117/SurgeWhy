@@ -1,0 +1,1057 @@
+{
+  "case_id": "CASE-05",
+  "claim_id": "CLM-9175",
+  "passenger_name": "Marcus Vance",
+  "flight_number": "AA-204",
+  "carrier_name": "American Airlines",
+  "route": "DFW -> ORD",
+  "jurisdiction": "US_DOT",
+  "carrier_denial_notice": "CLAIM DENIED ($0 PAYOUT): Aircraft equipment swap required by regional airspace congestion; passenger transported to destination in Economy (Code ATC-SWAP).",
+  "passenger_statement": "Skies were clear in Dallas and Chicago. They swapped our widebody 787 for a tiny narrowbody, bumped me from my $1,280 Business Class seat into middle Economy, and still charged me $180 for my bags!",
+  "verdict_code": "OVERTURNED_PAY_FULL",
+  "verdict_banner": "OVERTURNED: PAY $1,140 ($960 Cabin Downgrade + $180 Bag Fee)",
+  "airline_initial_payout_usd": 0,
+  "statutory_cash_owed_usd": 0,
+  "care_or_fee_recovery_usd": 1140,
+  "total_owed_usd": 1140,
+  "confidence_score": 0.98,
+  "abstention_triggered": false,
+  "missing_evidence_request": "",
+  "plain_english_why": "American Airlines claimed 'regional airspace congestion' (Code ATC-SWAP) forced an aircraft change, but FAA telemetry shows clear skies and zero flow restrictions between Dallas and Chicago. Operational log OPS-SWAP-77 proves airline revenue management pulled your healthy Boeing 787 (tail N814AA) to fly a high-margin sports charter (AA-9940) and substituted a smaller plane with 12 fewer Business seats, entitling you to a 75% Business fare refund ($960) plus 100% refund of the $180 bag fee ($1,140 total).",
+  "causal_chain": [
+    {
+      "node": "1. Airline Claim",
+      "fact": "Denied citing ATC-SWAP airspace congestion equipment change ($0 paid)",
+      "citation": "zetaris_ops.flight_disruptions#CLM-9175"
+    },
+    {
+      "node": "2. Airspace Clear",
+      "fact": "KDFW & KORD had 10.0 SM visibility, 0 ground stops, 19/20 peer departures on time",
+      "citation": "zetaris_rest.faa_metar_atc#METAR-KDFW-1022"
+    },
+    {
+      "node": "3. Commercial Charter Swap",
+      "fact": "Healthy B787 tail N814AA reassigned to charter AA-9940; narrowbody sub cut 12 Business seats",
+      "citation": "zetaris_maint.aircraft_crew_logs#OPS-SWAP-77"
+    },
+    {
+      "node": "4. Downgrade & Fee Rule",
+      "fact": "75% of $1,280 Business fare ($960) + $180 included Business bag fee = $1,140",
+      "citation": "zetaris_policy.passenger_rights_rules#DOT-DOWNGRADE-75"
+    }
+  ],
+  "ruled_out_hypotheses": [
+    {
+      "hypothesis_id": "HYP-AIRLINE-DEFENSE",
+      "title": "H1: Regional Airspace Congestion Forced Equipment Swap (ATC-SWAP)",
+      "status": "FALSIFIED",
+      "supporting_citations": [
+        "zetaris_ops.flight_disruptions#CLM-9175"
+      ],
+      "refuting_citations": [
+        "zetaris_rest.faa_metar_atc#METAR-KDFW-1022",
+        "zetaris_maint.aircraft_crew_logs#OPS-SWAP-77"
+      ],
+      "explanation": "Zero FAA congestion advisories existed, and tail N814AA had zero mechanical defects."
+    },
+    {
+      "hypothesis_id": "HYP-ROOT-CHARTER-DOWNGRADE",
+      "title": "H2: Commercial Charter Reassignment + Involuntary Cabin Downgrade",
+      "status": "VERIFIED_ROOT_CAUSE",
+      "supporting_citations": [
+        "zetaris_maint.aircraft_crew_logs#OPS-SWAP-77",
+        "zetaris_policy.passenger_rights_rules#DOT-DOWNGRADE-75"
+      ],
+      "refuting_citations": [],
+      "explanation": "Commercial fleet reassignment triggers mandatory involuntary downgrade refund (75% segment fare) and ancillary fee reversal."
+    }
+  ],
+  "counterfactuals": [
+    {
+      "id": "CF-01",
+      "parameter": "Substituted Cabin Seat",
+      "actual_value": "Downgraded Business -> Economy",
+      "flip_threshold": "Accommodated in Business Class on next flight",
+      "flipped_outcome": "$960 downgrade refund and $180 bag fee flip to $0."
+    },
+    {
+      "id": "CF-02",
+      "parameter": "Swap Reason (OPS-SWAP-77)",
+      "actual_value": "Commercial reassignment to charter AA-9940",
+      "flip_threshold": "Safety-driven swap (even if weather/ATC)",
+      "flipped_outcome": "IMPORTANT: Even in safety swaps, involuntary cabin downgrade STILL requires refunding fare difference + $180 Business bag allowance!"
+    }
+  ],
+  "simulator_defaults": {
+    "arrival_delay_min": 95,
+    "faa_ground_stop_active": 0,
+    "controllable_maint_min": 95,
+    "door_uncertainty_min": 0
+  },
+  "demand_letter": "DEMAND FOR INVOLUNTARY DOWNGRADE & FEE REFUND ($1,140.00) - CLAIM CLM-9175 / FLIGHT AA-204 (DFW->ORD)\n1. METAR-KDFW-1022 and log OPS-SWAP-77 confirm healthy B787 tail N814AA was commercially reassigned to charter AA-9940.\n2. Passenger paid $1,280 Business Class fare (which includes checked baggage) and was involuntarily seated in Economy.\n3. Under US DOT Refund Rule & tariff downgrade rules, remit $960.00 (75% downgrade refund) + $180.00 bag fee = $1,140.00.",
+  "engines_telemetry": {
+    "scout_intent": {
+      "intent_type": "COMMERCIAL_SWAP_DOWNGRADE",
+      "dispute_severity": "HIGH",
+      "ambiguity_risk_score": 18,
+      "abstention_watch": false,
+      "required_zetaris_tables": [
+        "zetaris_ops.flight_disruptions",
+        "zetaris_rest.faa_metar_atc",
+        "zetaris_policy.passenger_rights_rules",
+        "zetaris_maint.aircraft_crew_logs"
+      ],
+      "lane_plan": {
+        "step_1_intake": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "step_2_forensics_r1": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "step_3_counsel_critic": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "step_4_forensics_r2": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "step_5_counterfactual_engine": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "step_6_legal_brief": "nvidia/nemotron-3.5-super-vl-120b-a12b"
+      },
+      "rationale": "Detects equipment swap + involuntary cabin downgrade claim; requires tail assignment audit and 75% tariff rule check."
+    },
+    "world_model": {
+      "claim_id": "CLM-9175",
+      "version": 11,
+      "evidence_nodes": {
+        "EV-OPS-01": {
+          "node_id": "EV-OPS-01",
+          "source_table": "zetaris_ops.flight_disruptions",
+          "primary_key": "CLM-9175",
+          "field_summary": "AA-204 (DFW -> ORD) delayed 95m (door uncertainty +/-0m); airline cited ATC-SWAP (Regional Airspace Congestion Equipment Substitution) and paid $0.",
+          "supports_side": "AIRLINE_CLAIM_BASELINE",
+          "recorded_by": "Telemetry Forensics R1",
+          "world_version": 2
+        },
+        "EV-METAR-02": {
+          "node_id": "EV-METAR-02",
+          "source_table": "zetaris_rest.faa_metar_atc",
+          "primary_key": "METAR-KDFW-1022",
+          "field_summary": "KDFW visibility 10.0 SM, wind 9kt, ground_stop=0, ATC hold=0m, peer on-time=19/20.",
+          "supports_side": "PASSENGER",
+          "recorded_by": "Telemetry Forensics R1",
+          "world_version": 3
+        },
+        "EV-POL-03": {
+          "node_id": "EV-POL-03",
+          "source_table": "zetaris_policy.passenger_rights_rules",
+          "primary_key": "DOT-2024-REBOOK",
+          "field_summary": "14 CFR Part 260 & Carrier Contract of Carriage Rule 24: Extraordinary weather carries $0 statutory cash delay payout, but carrier MUST rebook next-available same-cabin seat at $0 fare difference.",
+          "supports_side": "STATUTORY_RULE",
+          "recorded_by": "Telemetry Forensics R1",
+          "world_version": 4
+        },
+        "EV-MAINT-04": {
+          "node_id": "EV-MAINT-04",
+          "source_table": "zetaris_maint.aircraft_crew_logs",
+          "primary_key": "OPS-SWAP-77",
+          "field_summary": "Tail N814AA (Healthy Boeing 787-9 parked at Gate C12): OPS-SWAP-77 [CONTROLLABLE_COMMERCIAL_SWAP] - Revenue management reassigned healthy B787 tail N814AA to high-margin charter AA-9940 and substituted smaller narrowbody with 12 fewer Business seats.",
+          "supports_side": "PASSENGER",
+          "recorded_by": "Telemetry Forensics R2",
+          "world_version": 8
+        }
+      },
+      "hypotheses": {
+        "HYP-AIRLINE-DEFENSE": {
+          "hypothesis_id": "HYP-AIRLINE-DEFENSE",
+          "title": "H1: Regional Airspace Congestion Forced Equipment Swap (ATC-SWAP)",
+          "proposed_by": "Telemetry Forensics R1",
+          "status": "FALSIFIED",
+          "supporting_citations": [
+            "zetaris_ops.flight_disruptions#CLM-9175"
+          ],
+          "refuting_citations": [
+            "zetaris_rest.faa_metar_atc#METAR-KDFW-1022",
+            "zetaris_maint.aircraft_crew_logs#OPS-SWAP-77"
+          ],
+          "explanation": "Zero FAA congestion advisories existed, and tail N814AA had zero mechanical defects."
+        },
+        "HYP-ROOT-CHARTER-DOWNGRADE": {
+          "hypothesis_id": "HYP-ROOT-CHARTER-DOWNGRADE",
+          "title": "H2: Commercial Charter Reassignment + Involuntary Cabin Downgrade",
+          "proposed_by": "Telemetry Forensics R2",
+          "status": "VERIFIED_ROOT_CAUSE",
+          "supporting_citations": [
+            "zetaris_maint.aircraft_crew_logs#OPS-SWAP-77",
+            "zetaris_policy.passenger_rights_rules#DOT-DOWNGRADE-75"
+          ],
+          "refuting_citations": [],
+          "explanation": "Commercial fleet reassignment triggers mandatory involuntary downgrade refund (75% segment fare) and ancillary fee reversal."
+        }
+      },
+      "critic_challenges": [
+        {
+          "challenge_id": "CRIT-CLM-9175",
+          "verdict": "REVISION_REQUIRED",
+          "objection": "PROOF_INSUFFICIENT_SAFETY_SWAP_CHECK: Clear corridor weather disproves ATC congestion, but airline counsel could claim an urgent airworthiness defect forced the B787 tail swap. Mandatory Round 2 SQL: audit zetaris_maint.aircraft_crew_logs for tail N814AA.",
+          "required_sql_followup": "SELECT * FROM zetaris_maint.aircraft_crew_logs WHERE claim_id = 'CLM-9175' AND tail_number = 'N814AA'",
+          "world_version": 7
+        }
+      ],
+      "counterfactual_deltas": [
+        {
+          "id": "CF-01",
+          "parameter": "Substituted Cabin Seat",
+          "actual_value": "Downgraded Business -> Economy",
+          "flip_threshold": "Accommodated in Business Class on next flight",
+          "flipped_outcome": "$960 downgrade refund and $180 bag fee flip to $0."
+        },
+        {
+          "id": "CF-02",
+          "parameter": "Swap Reason (OPS-SWAP-77)",
+          "actual_value": "Commercial reassignment to charter AA-9940",
+          "flip_threshold": "Safety-driven swap (even if weather/ATC)",
+          "flipped_outcome": "IMPORTANT: Even in safety swaps, involuntary cabin downgrade STILL requires refunding fare difference + $180 Business bag allowance!"
+        }
+      ],
+      "history": [
+        {
+          "version": 1,
+          "agent": "system",
+          "event": "Initialized CausalWorldModel for CLM-9175"
+        },
+        {
+          "version": 2,
+          "agent": "Telemetry Forensics R1",
+          "event": "Added evidence EV-OPS-01 from zetaris_ops.flight_disruptions#CLM-9175"
+        },
+        {
+          "version": 3,
+          "agent": "Telemetry Forensics R1",
+          "event": "Added evidence EV-METAR-02 from zetaris_rest.faa_metar_atc#METAR-KDFW-1022"
+        },
+        {
+          "version": 4,
+          "agent": "Telemetry Forensics R1",
+          "event": "Added evidence EV-POL-03 from zetaris_policy.passenger_rights_rules#DOT-2024-REBOOK"
+        },
+        {
+          "version": 5,
+          "agent": "Telemetry Forensics R1",
+          "event": "Hypothesis HYP-AIRLINE-DEFENSE -> PROPOSED"
+        },
+        {
+          "version": 6,
+          "agent": "Airline Counsel Critic",
+          "event": "Hypothesis HYP-AIRLINE-DEFENSE -> CHALLENGED_BY_COUNSEL"
+        },
+        {
+          "version": 7,
+          "agent": "Airline Counsel Critic",
+          "event": "Critic challenge CRIT-CLM-9175: REVISION_REQUIRED"
+        },
+        {
+          "version": 8,
+          "agent": "Telemetry Forensics R2",
+          "event": "Added evidence EV-MAINT-04 from zetaris_maint.aircraft_crew_logs#OPS-SWAP-77"
+        },
+        {
+          "version": 9,
+          "agent": "Telemetry Forensics R2",
+          "event": "Hypothesis HYP-AIRLINE-DEFENSE -> FALSIFIED"
+        },
+        {
+          "version": 10,
+          "agent": "Telemetry Forensics R2",
+          "event": "Hypothesis HYP-ROOT-CHARTER-DOWNGRADE -> VERIFIED_ROOT_CAUSE"
+        },
+        {
+          "version": 11,
+          "agent": "Counterfactual Engine",
+          "event": "Recorded 2 counterfactual flip rules"
+        }
+      ]
+    },
+    "markovian": {
+      "steps_compressed": 6,
+      "naive_cumulative_tokens": 9597,
+      "markovian_total_tokens": 734,
+      "token_reduction_pct": 92.4,
+      "max_capsule_budget": 380,
+      "capsules": [
+        {
+          "step_index": 1,
+          "step_name": "Intake & Statutory Scope Agent",
+          "world_version": 1,
+          "verified_citations": [
+            "HMEM-PREC-306",
+            "HMEM-PREC-301",
+            "HMEM-PREC-304"
+          ],
+          "open_questions": [
+            "Verify carrier claim code against live METAR and statutory payout rules"
+          ],
+          "active_verdict_draft": "Pending telemetry verification for COMMERCIAL_SWAP_DOWNGRADE",
+          "capsule_tokens": 103,
+          "raw_cumulative_tokens": 892
+        },
+        {
+          "step_index": 2,
+          "step_name": "Telemetry Forensics Agent (Round 1 SQL)",
+          "world_version": 5,
+          "verified_citations": [
+            "zetaris_ops.flight_disruptions#CLM-9175",
+            "zetaris_rest.faa_metar_atc#METAR-KDFW-1022",
+            "zetaris_policy.passenger_rights_rules#DOT-2024-REBOOK"
+          ],
+          "open_questions": [
+            "Unverified inbound aircraft tail history, MEL mechanical logs, and crew duty timers"
+          ],
+          "active_verdict_draft": "Preliminary weather check complete; tail-level causation still unproven",
+          "capsule_tokens": 134,
+          "raw_cumulative_tokens": 2371
+        },
+        {
+          "step_index": 3,
+          "step_name": "Devil's Advocate Airline Counsel Critic",
+          "world_version": 7,
+          "verified_citations": [
+            "zetaris_ops.flight_disruptions#CLM-9175",
+            "zetaris_rest.faa_metar_atc#METAR-KDFW-1022",
+            "zetaris_policy.passenger_rights_rules#DOT-2024-REBOOK"
+          ],
+          "open_questions": [
+            "Execute tail & crew log audit on N814AA"
+          ],
+          "active_verdict_draft": "BLOCKED BY CRITIC: Awaiting Round 2 aircraft_crew_logs proof",
+          "capsule_tokens": 119,
+          "raw_cumulative_tokens": 3917
+        },
+        {
+          "step_index": 4,
+          "step_name": "Telemetry Forensics Agent (Round 2 Tail & Crew SQL)",
+          "world_version": 10,
+          "verified_citations": [
+            "zetaris_ops.flight_disruptions#CLM-9175",
+            "zetaris_rest.faa_metar_atc#METAR-KDFW-1022",
+            "zetaris_policy.passenger_rights_rules#DOT-2024-REBOOK",
+            "zetaris_maint.aircraft_crew_logs#OPS-SWAP-77"
+          ],
+          "open_questions": [
+            "Compute exact counterfactual flip boundaries and confidence calibration"
+          ],
+          "active_verdict_draft": "OVERTURNED_PAY_FULL ($1140)",
+          "capsule_tokens": 132,
+          "raw_cumulative_tokens": 5668
+        },
+        {
+          "step_index": 5,
+          "step_name": "Counterfactual & Threshold Boundary Engine",
+          "world_version": 11,
+          "verified_citations": [
+            "zetaris_ops.flight_disruptions#CLM-9175",
+            "zetaris_rest.faa_metar_atc#METAR-KDFW-1022",
+            "zetaris_policy.passenger_rights_rules#DOT-2024-REBOOK",
+            "zetaris_maint.aircraft_crew_logs#OPS-SWAP-77"
+          ],
+          "open_questions": [],
+          "active_verdict_draft": "OVERTURNED: PAY $1,140 ($960 Cabin Downgrade + $180 Bag Fee)",
+          "capsule_tokens": 121,
+          "raw_cumulative_tokens": 7572
+        },
+        {
+          "step_index": 6,
+          "step_name": "Explainable Legal Brief & Claim Packet Agent",
+          "world_version": 11,
+          "verified_citations": [
+            "zetaris_ops.flight_disruptions#CLM-9175",
+            "zetaris_rest.faa_metar_atc#METAR-KDFW-1022",
+            "zetaris_policy.passenger_rights_rules#DOT-2024-REBOOK",
+            "zetaris_maint.aircraft_crew_logs#OPS-SWAP-77",
+            "HMEM-PREC-306"
+          ],
+          "open_questions": [],
+          "active_verdict_draft": "OVERTURNED: PAY $1,140 ($960 Cabin Downgrade + $180 Bag Fee)",
+          "capsule_tokens": 125,
+          "raw_cumulative_tokens": 9597
+        }
+      ]
+    },
+    "h_mem": {
+      "recalled_before_step_1": [
+        {
+          "memory_id": "HMEM-PREC-306",
+          "case_ref": "CLM-9132",
+          "carrier": "Lufthansa",
+          "verdict": "ABSTAIN_NEEDS_PASSENGER_EVIDENCE",
+          "rule_applied": "EU261-HENNING-DOOR",
+          "summary": "SurgeWhy proved 108 minutes of your delay was a controllable emergency-light bus repair (MNT-4482), defeating Lufthansa's de-icing excuse! However, SurgeWhy refuses to guess on your payout yet: under EU law (Germanwings v. Henning), the 180-minute cliff for \u20ac300 ($325) is measured at the exact minute the cabin door opens. Because wheel-stop was +177m ($0) and jetbridge dock was +184m ($325) - a 7-minute sensor gap right across the 180m line - one timestamped arrival screenshot flips this claim to a 96%-confident $325 win.",
+          "tags": [
+            "LH",
+            "WX-DEICE",
+            "EU261",
+            "MEL-33-12"
+          ],
+          "tier": "PRECEDENT",
+          "relevance_score": 10
+        },
+        {
+          "memory_id": "HMEM-PREC-301",
+          "case_ref": "ADJUDICATION-2026-0819",
+          "carrier": "American Airlines",
+          "verdict": "OVERTURNED",
+          "rule_applied": "DOT-DOWNGRADE-75",
+          "summary": "Commercial tail swap to charter route does not qualify as ATC congestion; awarded 75% cabin downgrade refund plus ancillary bag fee reversal.",
+          "tags": [
+            "AA",
+            "ATC-SWAP",
+            "downgrade",
+            "charter",
+            "US_DOT"
+          ],
+          "tier": "PRECEDENT",
+          "relevance_score": 9
+        },
+        {
+          "memory_id": "HMEM-PREC-304",
+          "case_ref": "CLM-9041",
+          "carrier": "United Airlines",
+          "verdict": "OVERTURNED_PAY_FULL",
+          "rule_applied": "UK261-ART7-LH",
+          "summary": "United's 'Extraordinary Hub Weather' denial (Code WX-88) is disproved by three independent records: NOAA METAR shows 10-mile clear skies at SFO with 14 of 14 neighboring flights departing on time, inbound aircraft N784UA landed 3 minutes early from Denver, and maintenance log MNT-4410 proves the 265-minute delay was caused by a 148-minute brake temperature sensor replacement (MEL-32-41) that triggered a 117-minute FAA Part 117 pilot duty-limit timeout.",
+          "tags": [
+            "UA",
+            "WX-88",
+            "UK261",
+            "MEL-32-41"
+          ],
+          "tier": "PRECEDENT",
+          "relevance_score": 9
+        }
+      ],
+      "committed_after_step_6": {
+        "memory_id": "HMEM-PREC-306",
+        "case_ref": "CLM-9175",
+        "carrier": "American Airlines",
+        "verdict": "OVERTURNED_PAY_FULL",
+        "rule_applied": "DOT-2024-REBOOK",
+        "summary": "American Airlines claimed 'regional airspace congestion' (Code ATC-SWAP) forced an aircraft change, but FAA telemetry shows clear skies and zero flow restrictions between Dallas and Chicago. Operational log OPS-SWAP-77 proves airline revenue management pulled your healthy Boeing 787 (tail N814AA) to fly a high-margin sports charter (AA-9940) and substituted a smaller plane with 12 fewer Business seats, entitling you to a 75% Business fare refund ($960) plus 100% refund of the $180 bag fee ($1,140 total).",
+        "tags": [
+          "AA",
+          "ATC-SWAP",
+          "US_DOT",
+          "OPS-SWAP-77"
+        ]
+      }
+    }
+  },
+  "zetaris_queries": [
+    {
+      "query_id": "84bc5765-a406-4f5d-8a0e-e971fe8c0891",
+      "request_id": "3496a787-1335-4abd-89a0-11ad0bb4b6d1",
+      "sql": "SELECT * FROM zetaris_ops.flight_disruptions WHERE claim_id = 'CLM-9175'",
+      "source_tables_touched": [
+        "zetaris_ops.flight_disruptions"
+      ],
+      "row_count": 1,
+      "latency_ms": 4.22,
+      "mode": "zetaris-sample-federation",
+      "rows": [
+        {
+          "claim_id": "CLM-9175",
+          "flight_number": "AA-204",
+          "carrier_name": "American Airlines",
+          "route": "DFW -> ORD",
+          "distance_km": 1290,
+          "jurisdiction": "US_DOT",
+          "scheduled_dep_utc": "2026-10-22T08:00:00Z",
+          "actual_arr_delay_min": 95,
+          "door_open_uncertainty_min": 0,
+          "airline_claimed_code": "ATC-SWAP",
+          "airline_claimed_reason": "Regional Airspace Congestion Equipment Substitution",
+          "airline_initial_payout_usd": 0,
+          "care_receipts_usd": 0,
+          "fare_surge_charged_usd": 0,
+          "downgrade_fare_paid_usd": 1280,
+          "extra_bag_fee_usd": 180,
+          "tail_number": "N814AA",
+          "dep_airport": "KDFW",
+          "arr_airport": "KORD",
+          "connection_buffer_min": 0
+        }
+      ]
+    },
+    {
+      "query_id": "5deb00b7-c269-49fc-93c9-bbebe083bd35",
+      "request_id": "97f7e998-193e-4660-b216-ef7192470cef",
+      "sql": "SELECT * FROM zetaris_rest.faa_metar_atc WHERE claim_id = 'CLM-9175'",
+      "source_tables_touched": [
+        "zetaris_rest.faa_metar_atc"
+      ],
+      "row_count": 1,
+      "latency_ms": 4.21,
+      "mode": "zetaris-sample-federation",
+      "rows": [
+        {
+          "metar_id": "METAR-KDFW-1022",
+          "claim_id": "CLM-9175",
+          "airport_icao": "KDFW",
+          "observation_window_utc": "2026-10-22T07:00Z-10:00Z",
+          "visibility_sm": 10.0,
+          "wind_speed_kt": 9,
+          "crosswind_limit_kt": 35,
+          "weather_phenomena": "CLR (Clear Skies at KDFW and KORD)",
+          "faa_ground_stop_active": 0,
+          "atc_spacing_delay_min": 0,
+          "peer_concourse_departures_total": 20,
+          "peer_concourse_departures_ontime": 19,
+          "atc_bulletin_note": "Zero airspace congestion or flow-control restrictions on DFW-ORD corridor."
+        }
+      ]
+    },
+    {
+      "query_id": "e58aee68-37c1-4e7e-b4b0-56a2a8f5e062",
+      "request_id": "147288f9-2cb1-48fe-83a2-ead59fd633f7",
+      "sql": "SELECT * FROM zetaris_policy.passenger_rights_rules WHERE jurisdiction = 'US_DOT'",
+      "source_tables_touched": [
+        "zetaris_policy.passenger_rights_rules"
+      ],
+      "row_count": 2,
+      "latency_ms": 4.21,
+      "mode": "zetaris-sample-federation",
+      "rows": [
+        {
+          "rule_id": "DOT-2024-REBOOK",
+          "jurisdiction": "US_DOT",
+          "applies_to_category": "WEATHER_CANCELLATION_SURGE",
+          "min_distance_km": 0,
+          "min_arrival_delay_min": 180,
+          "full_payout_delay_min": 360,
+          "statutory_cash_usd": 0,
+          "half_tier_cash_usd": 0,
+          "duty_of_care_covered": 0,
+          "fare_surge_cap_applies": 1,
+          "downgrade_refund_pct": 75,
+          "legal_citation": "14 CFR Part 260 & Carrier Contract of Carriage Rule 24: Extraordinary weather carries $0 statutory cash delay payout, but carrier MUST rebook next-available same-cabin seat at $0 fare difference."
+        },
+        {
+          "rule_id": "DOT-DOWNGRADE-75",
+          "jurisdiction": "US_DOT",
+          "applies_to_category": "COMMERCIAL_SWAP_DOWNGRADE",
+          "min_distance_km": 0,
+          "min_arrival_delay_min": 0,
+          "full_payout_delay_min": 180,
+          "statutory_cash_usd": 0,
+          "half_tier_cash_usd": 0,
+          "duty_of_care_covered": 1,
+          "fare_surge_cap_applies": 1,
+          "downgrade_refund_pct": 75,
+          "legal_citation": "US DOT Refund Rule & Montreal/Tariff Downgrade Provision: Commercial tail swap + involuntary Business-to-Economy downgrade requires 75% segment fare refund plus 100% ancillary fee reversal."
+        }
+      ]
+    },
+    {
+      "query_id": "06da22b8-cd10-4f3e-aedf-dc96d3d36d67",
+      "request_id": "bb6ccdf5-1ca2-44a5-8e68-34b661e8f7ed",
+      "sql": "SELECT * FROM zetaris_maint.aircraft_crew_logs WHERE claim_id = 'CLM-9175'",
+      "source_tables_touched": [
+        "zetaris_maint.aircraft_crew_logs"
+      ],
+      "row_count": 1,
+      "latency_ms": 4.21,
+      "mode": "zetaris-sample-federation",
+      "rows": [
+        {
+          "log_id": "OPS-SWAP-77",
+          "claim_id": "CLM-9175",
+          "tail_number": "N814AA",
+          "inbound_flight_status": "Healthy Boeing 787-9 parked at Gate C12",
+          "primary_event_code": "OPS-SWAP-77",
+          "primary_event_category": "CONTROLLABLE_COMMERCIAL_SWAP",
+          "controllable_minutes": 95,
+          "extraordinary_minutes": 0,
+          "crew_timeout_minutes": 0,
+          "log_summary": "Revenue management reassigned healthy B787 tail N814AA to high-margin charter AA-9940 and substituted smaller narrowbody with 12 fewer Business seats."
+        }
+      ]
+    },
+    {
+      "query_id": "2de1b3bd-4f2c-4cc6-98aa-6c2042f33875",
+      "request_id": "244f2a42-c5be-4f93-a84b-2a09b1f8503a",
+      "sql": "SELECT f.claim_id, f.flight_number, f.actual_arr_delay_min, f.door_open_uncertainty_min, w.faa_ground_stop_active, w.atc_spacing_delay_min, m.primary_event_code, m.controllable_minutes, m.crew_timeout_minutes FROM zetaris_ops.flight_disruptions f JOIN zetaris_rest.faa_metar_atc w ON f.claim_id = w.claim_id JOIN zetaris_maint.aircraft_crew_logs m ON f.claim_id = m.claim_id WHERE f.claim_id = 'CLM-9175'",
+      "source_tables_touched": [
+        "zetaris_ops.flight_disruptions",
+        "zetaris_rest.faa_metar_atc",
+        "zetaris_maint.aircraft_crew_logs"
+      ],
+      "row_count": 1,
+      "latency_ms": 4.23,
+      "mode": "zetaris-sample-federation",
+      "rows": [
+        {
+          "claim_id": "CLM-9175",
+          "flight_number": "AA-204",
+          "actual_arr_delay_min": 95,
+          "door_open_uncertainty_min": 0,
+          "faa_ground_stop_active": 0,
+          "atc_spacing_delay_min": 0,
+          "primary_event_code": "OPS-SWAP-77",
+          "controllable_minutes": 95,
+          "crew_timeout_minutes": 0
+        }
+      ]
+    }
+  ],
+  "nightshift_receipts": [
+    {
+      "receipt_id": "NS-RCPT-01-FA236D75",
+      "step_number": 1,
+      "step_name": "Intake & Statutory Scope Agent",
+      "lane": "Lane 1 (Fast Worker)",
+      "requested_model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "model_handled_by": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "provider": "meterless-nightshift (sample-verified)",
+      "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+      "latency_ms": 225.0,
+      "prompt_tokens": 176,
+      "completion_tokens": 48
+    },
+    {
+      "receipt_id": "NS-RCPT-02-C7997275",
+      "step_number": 2,
+      "step_name": "Telemetry Forensics Agent (Round 1 SQL)",
+      "lane": "Lane 1 (Fast Worker)",
+      "requested_model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "model_handled_by": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "provider": "meterless-nightshift (sample-verified)",
+      "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+      "latency_ms": 223.0,
+      "prompt_tokens": 431,
+      "completion_tokens": 60
+    },
+    {
+      "receipt_id": "NS-RCPT-03-F3807398",
+      "step_number": 3,
+      "step_name": "Devil's Advocate Airline Counsel Critic",
+      "lane": "Lane 2 (Deep Worker)",
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "model_handled_by": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "provider": "meterless-nightshift (sample-verified)",
+      "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+      "latency_ms": 445.0,
+      "prompt_tokens": 332,
+      "completion_tokens": 67
+    },
+    {
+      "receipt_id": "NS-RCPT-04-A6B2EC73",
+      "step_number": 4,
+      "step_name": "Telemetry Forensics Agent (Round 2 Tail & Crew SQL)",
+      "lane": "Lane 1 (Fast Worker)",
+      "requested_model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "model_handled_by": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "provider": "meterless-nightshift (sample-verified)",
+      "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+      "latency_ms": 229.0,
+      "prompt_tokens": 280,
+      "completion_tokens": 89
+    },
+    {
+      "receipt_id": "NS-RCPT-05-F5A2B483",
+      "step_number": 5,
+      "step_name": "Counterfactual & Threshold Boundary Engine",
+      "lane": "Lane 2 (Deep Worker)",
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "model_handled_by": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "provider": "meterless-nightshift (sample-verified)",
+      "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+      "latency_ms": 444.0,
+      "prompt_tokens": 1154,
+      "completion_tokens": 44
+    },
+    {
+      "receipt_id": "NS-RCPT-06-69FF3CE6",
+      "step_number": 6,
+      "step_name": "Explainable Legal Brief & Claim Packet Agent",
+      "lane": "Lane 2 (Deep Worker)",
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "model_handled_by": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "provider": "meterless-nightshift (sample-verified)",
+      "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+      "latency_ms": 434.0,
+      "prompt_tokens": 289,
+      "completion_tokens": 121
+    }
+  ],
+  "steps": [
+    {
+      "step_number": 1,
+      "agent_name": "Intake & Statutory Scope Agent",
+      "role_badge": "SCOUT INTENT + H-MEM",
+      "summary": "Classified CLM-9175 (AA-204) as COMMERCIAL_SWAP_DOWNGRADE (ambiguity risk 18/100, abstention_watch=False). Recalled 3 H-MEM precedents and delegated Round 1 SQL across 3 Zetaris tables.",
+      "sql_queries": [],
+      "world_version": 1,
+      "markov_capsule": {
+        "step_index": 1,
+        "step_name": "Intake & Statutory Scope Agent",
+        "world_version": 1,
+        "verified_citations": [
+          "HMEM-PREC-306",
+          "HMEM-PREC-301",
+          "HMEM-PREC-304"
+        ],
+        "open_questions": [
+          "Verify carrier claim code against live METAR and statutory payout rules"
+        ],
+        "active_verdict_draft": "Pending telemetry verification for COMMERCIAL_SWAP_DOWNGRADE",
+        "capsule_tokens": 103,
+        "raw_cumulative_tokens": 892
+      },
+      "model_receipt": {
+        "receipt_id": "NS-RCPT-01-FA236D75",
+        "step_number": 1,
+        "step_name": "Intake & Statutory Scope Agent",
+        "lane": "Lane 1 (Fast Worker)",
+        "requested_model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "model_handled_by": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "provider": "meterless-nightshift (sample-verified)",
+        "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+        "latency_ms": 225.0,
+        "prompt_tokens": 176,
+        "completion_tokens": 48
+      }
+    },
+    {
+      "step_number": 2,
+      "agent_name": "Telemetry Forensics Agent (Round 1)",
+      "role_badge": "ZETARIS SQL DISCOVERY",
+      "summary": "Queried flight_disruptions, faa_metar_atc, and passenger_rights_rules via Zetaris. Observed CLR (Clear Skies at KDFW and KORD) at KDFW with 19/20 peer flights on time. Drafting preliminary finding from external weather telemetry.",
+      "sql_queries": [
+        {
+          "query_id": "84bc5765-a406-4f5d-8a0e-e971fe8c0891",
+          "request_id": "3496a787-1335-4abd-89a0-11ad0bb4b6d1",
+          "sql": "SELECT * FROM zetaris_ops.flight_disruptions WHERE claim_id = 'CLM-9175'",
+          "source_tables_touched": [
+            "zetaris_ops.flight_disruptions"
+          ],
+          "row_count": 1,
+          "latency_ms": 4.22,
+          "mode": "zetaris-sample-federation",
+          "rows": [
+            {
+              "claim_id": "CLM-9175",
+              "flight_number": "AA-204",
+              "carrier_name": "American Airlines",
+              "route": "DFW -> ORD",
+              "distance_km": 1290,
+              "jurisdiction": "US_DOT",
+              "scheduled_dep_utc": "2026-10-22T08:00:00Z",
+              "actual_arr_delay_min": 95,
+              "door_open_uncertainty_min": 0,
+              "airline_claimed_code": "ATC-SWAP",
+              "airline_claimed_reason": "Regional Airspace Congestion Equipment Substitution",
+              "airline_initial_payout_usd": 0,
+              "care_receipts_usd": 0,
+              "fare_surge_charged_usd": 0,
+              "downgrade_fare_paid_usd": 1280,
+              "extra_bag_fee_usd": 180,
+              "tail_number": "N814AA",
+              "dep_airport": "KDFW",
+              "arr_airport": "KORD",
+              "connection_buffer_min": 0
+            }
+          ]
+        },
+        {
+          "query_id": "5deb00b7-c269-49fc-93c9-bbebe083bd35",
+          "request_id": "97f7e998-193e-4660-b216-ef7192470cef",
+          "sql": "SELECT * FROM zetaris_rest.faa_metar_atc WHERE claim_id = 'CLM-9175'",
+          "source_tables_touched": [
+            "zetaris_rest.faa_metar_atc"
+          ],
+          "row_count": 1,
+          "latency_ms": 4.21,
+          "mode": "zetaris-sample-federation",
+          "rows": [
+            {
+              "metar_id": "METAR-KDFW-1022",
+              "claim_id": "CLM-9175",
+              "airport_icao": "KDFW",
+              "observation_window_utc": "2026-10-22T07:00Z-10:00Z",
+              "visibility_sm": 10.0,
+              "wind_speed_kt": 9,
+              "crosswind_limit_kt": 35,
+              "weather_phenomena": "CLR (Clear Skies at KDFW and KORD)",
+              "faa_ground_stop_active": 0,
+              "atc_spacing_delay_min": 0,
+              "peer_concourse_departures_total": 20,
+              "peer_concourse_departures_ontime": 19,
+              "atc_bulletin_note": "Zero airspace congestion or flow-control restrictions on DFW-ORD corridor."
+            }
+          ]
+        },
+        {
+          "query_id": "e58aee68-37c1-4e7e-b4b0-56a2a8f5e062",
+          "request_id": "147288f9-2cb1-48fe-83a2-ead59fd633f7",
+          "sql": "SELECT * FROM zetaris_policy.passenger_rights_rules WHERE jurisdiction = 'US_DOT'",
+          "source_tables_touched": [
+            "zetaris_policy.passenger_rights_rules"
+          ],
+          "row_count": 2,
+          "latency_ms": 4.21,
+          "mode": "zetaris-sample-federation",
+          "rows": [
+            {
+              "rule_id": "DOT-2024-REBOOK",
+              "jurisdiction": "US_DOT",
+              "applies_to_category": "WEATHER_CANCELLATION_SURGE",
+              "min_distance_km": 0,
+              "min_arrival_delay_min": 180,
+              "full_payout_delay_min": 360,
+              "statutory_cash_usd": 0,
+              "half_tier_cash_usd": 0,
+              "duty_of_care_covered": 0,
+              "fare_surge_cap_applies": 1,
+              "downgrade_refund_pct": 75,
+              "legal_citation": "14 CFR Part 260 & Carrier Contract of Carriage Rule 24: Extraordinary weather carries $0 statutory cash delay payout, but carrier MUST rebook next-available same-cabin seat at $0 fare difference."
+            },
+            {
+              "rule_id": "DOT-DOWNGRADE-75",
+              "jurisdiction": "US_DOT",
+              "applies_to_category": "COMMERCIAL_SWAP_DOWNGRADE",
+              "min_distance_km": 0,
+              "min_arrival_delay_min": 0,
+              "full_payout_delay_min": 180,
+              "statutory_cash_usd": 0,
+              "half_tier_cash_usd": 0,
+              "duty_of_care_covered": 1,
+              "fare_surge_cap_applies": 1,
+              "downgrade_refund_pct": 75,
+              "legal_citation": "US DOT Refund Rule & Montreal/Tariff Downgrade Provision: Commercial tail swap + involuntary Business-to-Economy downgrade requires 75% segment fare refund plus 100% ancillary fee reversal."
+            }
+          ]
+        }
+      ],
+      "world_version": 5,
+      "markov_capsule": {
+        "step_index": 2,
+        "step_name": "Telemetry Forensics Agent (Round 1 SQL)",
+        "world_version": 5,
+        "verified_citations": [
+          "zetaris_ops.flight_disruptions#CLM-9175",
+          "zetaris_rest.faa_metar_atc#METAR-KDFW-1022",
+          "zetaris_policy.passenger_rights_rules#DOT-2024-REBOOK"
+        ],
+        "open_questions": [
+          "Unverified inbound aircraft tail history, MEL mechanical logs, and crew duty timers"
+        ],
+        "active_verdict_draft": "Preliminary weather check complete; tail-level causation still unproven",
+        "capsule_tokens": 134,
+        "raw_cumulative_tokens": 2371
+      },
+      "model_receipt": {
+        "receipt_id": "NS-RCPT-02-C7997275",
+        "step_number": 2,
+        "step_name": "Telemetry Forensics Agent (Round 1 SQL)",
+        "lane": "Lane 1 (Fast Worker)",
+        "requested_model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "model_handled_by": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "provider": "meterless-nightshift (sample-verified)",
+        "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+        "latency_ms": 223.0,
+        "prompt_tokens": 431,
+        "completion_tokens": 60
+      }
+    },
+    {
+      "step_number": 3,
+      "agent_name": "Devil's Advocate Airline Counsel Critic",
+      "role_badge": "ADVERSARIAL REJECTION",
+      "summary": "PROOF_INSUFFICIENT_SAFETY_SWAP_CHECK: Clear corridor weather disproves ATC congestion, but airline counsel could claim an urgent airworthiness defect forced the B787 tail swap. Mandatory Round 2 SQL: audit zetaris_maint.aircraft_crew_logs for tail N814AA.",
+      "sql_queries": [],
+      "world_version": 7,
+      "markov_capsule": {
+        "step_index": 3,
+        "step_name": "Devil's Advocate Airline Counsel Critic",
+        "world_version": 7,
+        "verified_citations": [
+          "zetaris_ops.flight_disruptions#CLM-9175",
+          "zetaris_rest.faa_metar_atc#METAR-KDFW-1022",
+          "zetaris_policy.passenger_rights_rules#DOT-2024-REBOOK"
+        ],
+        "open_questions": [
+          "Execute tail & crew log audit on N814AA"
+        ],
+        "active_verdict_draft": "BLOCKED BY CRITIC: Awaiting Round 2 aircraft_crew_logs proof",
+        "capsule_tokens": 119,
+        "raw_cumulative_tokens": 3917
+      },
+      "model_receipt": {
+        "receipt_id": "NS-RCPT-03-F3807398",
+        "step_number": 3,
+        "step_name": "Devil's Advocate Airline Counsel Critic",
+        "lane": "Lane 2 (Deep Worker)",
+        "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "model_handled_by": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "provider": "meterless-nightshift (sample-verified)",
+        "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+        "latency_ms": 445.0,
+        "prompt_tokens": 332,
+        "completion_tokens": 67
+      }
+    },
+    {
+      "step_number": 4,
+      "agent_name": "Telemetry Forensics Agent (Round 2)",
+      "role_badge": "TARGETED RE-QUERY",
+      "summary": "Executed Round 2 Zetaris SQL on aircraft_crew_logs#OPS-SWAP-77 and federated 3-table join. Confirmed CONTROLLABLE_COMMERCIAL_SWAP (Revenue management reassigned healthy B787 tail N814AA to high-margin charter AA-9940 and substituted smaller narrowbody with 12 fewer Business seats.) and updated 2 causal hypotheses in CausalWorldModel v10.",
+      "sql_queries": [
+        {
+          "query_id": "06da22b8-cd10-4f3e-aedf-dc96d3d36d67",
+          "request_id": "bb6ccdf5-1ca2-44a5-8e68-34b661e8f7ed",
+          "sql": "SELECT * FROM zetaris_maint.aircraft_crew_logs WHERE claim_id = 'CLM-9175'",
+          "source_tables_touched": [
+            "zetaris_maint.aircraft_crew_logs"
+          ],
+          "row_count": 1,
+          "latency_ms": 4.21,
+          "mode": "zetaris-sample-federation",
+          "rows": [
+            {
+              "log_id": "OPS-SWAP-77",
+              "claim_id": "CLM-9175",
+              "tail_number": "N814AA",
+              "inbound_flight_status": "Healthy Boeing 787-9 parked at Gate C12",
+              "primary_event_code": "OPS-SWAP-77",
+              "primary_event_category": "CONTROLLABLE_COMMERCIAL_SWAP",
+              "controllable_minutes": 95,
+              "extraordinary_minutes": 0,
+              "crew_timeout_minutes": 0,
+              "log_summary": "Revenue management reassigned healthy B787 tail N814AA to high-margin charter AA-9940 and substituted smaller narrowbody with 12 fewer Business seats."
+            }
+          ]
+        },
+        {
+          "query_id": "2de1b3bd-4f2c-4cc6-98aa-6c2042f33875",
+          "request_id": "244f2a42-c5be-4f93-a84b-2a09b1f8503a",
+          "sql": "SELECT f.claim_id, f.flight_number, f.actual_arr_delay_min, f.door_open_uncertainty_min, w.faa_ground_stop_active, w.atc_spacing_delay_min, m.primary_event_code, m.controllable_minutes, m.crew_timeout_minutes FROM zetaris_ops.flight_disruptions f JOIN zetaris_rest.faa_metar_atc w ON f.claim_id = w.claim_id JOIN zetaris_maint.aircraft_crew_logs m ON f.claim_id = m.claim_id WHERE f.claim_id = 'CLM-9175'",
+          "source_tables_touched": [
+            "zetaris_ops.flight_disruptions",
+            "zetaris_rest.faa_metar_atc",
+            "zetaris_maint.aircraft_crew_logs"
+          ],
+          "row_count": 1,
+          "latency_ms": 4.23,
+          "mode": "zetaris-sample-federation",
+          "rows": [
+            {
+              "claim_id": "CLM-9175",
+              "flight_number": "AA-204",
+              "actual_arr_delay_min": 95,
+              "door_open_uncertainty_min": 0,
+              "faa_ground_stop_active": 0,
+              "atc_spacing_delay_min": 0,
+              "primary_event_code": "OPS-SWAP-77",
+              "controllable_minutes": 95,
+              "crew_timeout_minutes": 0
+            }
+          ]
+        }
+      ],
+      "world_version": 10,
+      "markov_capsule": {
+        "step_index": 4,
+        "step_name": "Telemetry Forensics Agent (Round 2 Tail & Crew SQL)",
+        "world_version": 10,
+        "verified_citations": [
+          "zetaris_ops.flight_disruptions#CLM-9175",
+          "zetaris_rest.faa_metar_atc#METAR-KDFW-1022",
+          "zetaris_policy.passenger_rights_rules#DOT-2024-REBOOK",
+          "zetaris_maint.aircraft_crew_logs#OPS-SWAP-77"
+        ],
+        "open_questions": [
+          "Compute exact counterfactual flip boundaries and confidence calibration"
+        ],
+        "active_verdict_draft": "OVERTURNED_PAY_FULL ($1140)",
+        "capsule_tokens": 132,
+        "raw_cumulative_tokens": 5668
+      },
+      "model_receipt": {
+        "receipt_id": "NS-RCPT-04-A6B2EC73",
+        "step_number": 4,
+        "step_name": "Telemetry Forensics Agent (Round 2 Tail & Crew SQL)",
+        "lane": "Lane 1 (Fast Worker)",
+        "requested_model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "model_handled_by": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "provider": "meterless-nightshift (sample-verified)",
+        "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+        "latency_ms": 229.0,
+        "prompt_tokens": 280,
+        "completion_tokens": 89
+      }
+    },
+    {
+      "step_number": 5,
+      "agent_name": "Counterfactual & Threshold Boundary Engine",
+      "role_badge": "COUNTERFACTUAL FLIP MATH",
+      "summary": "Computed 2 counterfactual flip boundaries. Calibrated confidence=98% (abstention_triggered=False). Verdict: OVERTURNED: PAY $1,140 ($960 Cabin Downgrade + $180 Bag Fee).",
+      "sql_queries": [],
+      "world_version": 11,
+      "markov_capsule": {
+        "step_index": 5,
+        "step_name": "Counterfactual & Threshold Boundary Engine",
+        "world_version": 11,
+        "verified_citations": [
+          "zetaris_ops.flight_disruptions#CLM-9175",
+          "zetaris_rest.faa_metar_atc#METAR-KDFW-1022",
+          "zetaris_policy.passenger_rights_rules#DOT-2024-REBOOK",
+          "zetaris_maint.aircraft_crew_logs#OPS-SWAP-77"
+        ],
+        "open_questions": [],
+        "active_verdict_draft": "OVERTURNED: PAY $1,140 ($960 Cabin Downgrade + $180 Bag Fee)",
+        "capsule_tokens": 121,
+        "raw_cumulative_tokens": 7572
+      },
+      "model_receipt": {
+        "receipt_id": "NS-RCPT-05-F5A2B483",
+        "step_number": 5,
+        "step_name": "Counterfactual & Threshold Boundary Engine",
+        "lane": "Lane 2 (Deep Worker)",
+        "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "model_handled_by": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "provider": "meterless-nightshift (sample-verified)",
+        "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+        "latency_ms": 444.0,
+        "prompt_tokens": 1154,
+        "completion_tokens": 44
+      }
+    },
+    {
+      "step_number": 6,
+      "agent_name": "Explainable Legal Brief & Claim Packet Agent",
+      "role_badge": "CITED PROOF PACKET + H-MEM",
+      "summary": "Generated plain-English causal proof chain, ruled-out defense ledger, and passenger demand brief; persisted precedent to H-MEM.",
+      "sql_queries": [],
+      "world_version": 11,
+      "markov_capsule": {
+        "step_index": 6,
+        "step_name": "Explainable Legal Brief & Claim Packet Agent",
+        "world_version": 11,
+        "verified_citations": [
+          "zetaris_ops.flight_disruptions#CLM-9175",
+          "zetaris_rest.faa_metar_atc#METAR-KDFW-1022",
+          "zetaris_policy.passenger_rights_rules#DOT-2024-REBOOK",
+          "zetaris_maint.aircraft_crew_logs#OPS-SWAP-77",
+          "HMEM-PREC-306"
+        ],
+        "open_questions": [],
+        "active_verdict_draft": "OVERTURNED: PAY $1,140 ($960 Cabin Downgrade + $180 Bag Fee)",
+        "capsule_tokens": 125,
+        "raw_cumulative_tokens": 9597
+      },
+      "model_receipt": {
+        "receipt_id": "NS-RCPT-06-69FF3CE6",
+        "step_number": 6,
+        "step_name": "Explainable Legal Brief & Claim Packet Agent",
+        "lane": "Lane 2 (Deep Worker)",
+        "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "model_handled_by": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "provider": "meterless-nightshift (sample-verified)",
+        "endpoint": "http://127.0.0.1:8088/v1/chat/completions",
+        "latency_ms": 434.0,
+        "prompt_tokens": 289,
+        "completion_tokens": 121
+      }
+    }
+  ]
+}
